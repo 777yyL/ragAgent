@@ -34,7 +34,7 @@ public class ArtemisClient {
 
     private final HikvisionProperties props;
     private final ObjectMapper mapper = new ObjectMapper();
-    private final OkHttpClient http = new OkHttpClient.Builder().build();
+    private final OkHttpClient http = com.company.knowledge.integration.hikvision.HttpClientFactory.createTrustAllClient();
 
     public ArtemisClient(HikvisionProperties props) {
         this.props = props;
