@@ -1,0 +1,141 @@
+1.1 Oauth2服务接口 
+1.1.1 获取授权码 
+接口地址：https:// ip:port/artemis/api/application/auth/v2/app/oauth2/authorize 
+请求方式：GET 
+状态码：302 
+请求参数： 
+参数名 数据类型 是否必填 参数说明 备注 
+response_type string 是 授权类型 固定值：code 
+redirect_uri url字符串 是 回调地址 需要将url进行URLEncode
+编码。redirect_uri接口
+是get请求，参数有code、
+state、menu_uri、
+logoutOauth2；如果有登
+出操作，海康平台会请求
+ 海康平台Oauth2服务接口说明书           
+2 
+ 
+返回属性： 
+参数名 数据类型 参数说明 备注 
+code string 授权码 用户登录并授权后，授权服务器返回
+给应用的授权码。注意：此code会在
+5分钟内过期。 
+state string 应用端的
+状态码, 
+可选 
+应用端的状态值。用于第三方应用系
+统防止CSRF攻击，成功授权后回调时
+会原样带回。 
+menu_uri url字符串 当前菜单
+uri 
+需要访问的菜单地址 
+该接口，带上
+logoutOauth2参数，参数
+值为access_token.应用
+方需要相应的做出登出操
+作。 
+menu_uri url字符串 是 当前菜单访问地址 需要将url进行
+URLEncode。 
+state string 否 应用端的状态码，可
+选 
+用于第三方应用系统防止
+CSRF攻击，授权成功后回
+调时会原样带回。 
+scope string 否 权限范围 保留字段，暂不使用 
+client_id string 是 API网关注册的
+appKey 
+ 
+ 海康平台Oauth2服务接口说明书           
+3 
+ 
+请求示例：https://ip:port/artemis/api/application/auth/v2/app/oauth2/authorize? 
+redirect_uri=http%3A%2F%2Fnba.bluewebgame.com%2Foauth_response.php&resp 
+onse_type=code&state=15924362&menu_uri= http%3A%2F%2Fnba.bluewebgame.com%baidu.com&appKey=123 
+返回示例： 
+HTTP Status: 302 REDIRECT 
+{redirect_uri}?code=9A5F**06AF&state=15924362&menu_uri= http%3A%2F%2Fnba.bluewebgame.com%baidu.com 
+JAVA调用示例： 
+ArtemisConfig.host = "127.0.0.1:443"; 
+ArtemisConfig.appKey = "123"; 
+response.sendRedirect("https://"+ArtemisConfig.host+"/artemis/api/application/auth/v2/app/oauth2/auth
+orize"+ "?" + "response_type=" + "code" + "&" + "redirect_uri=" + redirect_uri + "&" + "state=" + state + "&" 
++ "client_id=" + ArtemisConfig.appKey + "&" + "menu_uri=" + menu_uri); 
+1.1.2 获取access_token 
+接口地址：https:// ip:port/artemis/api/application/auth/v2/app/oauth2/token 
+请求方式：POST 
+Content-type: application/x-www-form-urlencoded 
+请求参数： 
+参数名 数据类型 参数说明 备注 
+client_id string API网关注册的appKey  
+client_secret string API网关注册的appSecret  
+grant_type string 授权类型 固定值authorization_code 
+redirect_uri url字符串 回调地址 注意需要将url进行URLEncode 
+code string 授权码 由获取授权码接口返回。 
+ 海康平台Oauth2服务接口说明书           
+4 
+ 
+返回属性： 
+参数名 数据类型 参数说明 备注 
+access_token string 授权令牌 授权服务器返回给第三方应用的授权
+令牌。 
+refresh_token string 刷新令牌 access_token快过期时，可以使用该值
+进行刷新 
+expires_in int 授权令牌
+的有效期 
+固定值1800，单位为秒，即此
+access_token会在30分钟内过期。 
+返回示例： 
+{ 
+ "code": "0", 
+ "msg": "SUCCESS", 
+ "data": { 
+  "access_token": " f78d3082b9ee4864bc32bb8a37f87c95", 
+  "refresh_token": " f78d3082b9ee4864bc32bb8a37f87c95", 
+  "expires_in": 1800 
+ } 
+} 
+ 
+JAVA调用示例： 
+public static void main(String[] args) { 
+//api网关的合作方信息 
+        ArtemisConfig.host = "127.0.0.1:443"; 
+        ArtemisConfig.appKey = "123"; 
+        ArtemisConfig.appSecret = "123"; 
+        String ARTEMIS_PATH = "/artemis/api/application/auth/v2/app/oauth2/token"; 
+ 海康平台Oauth2服务接口说明书           
+5 
+ 
+        Map<String, String> path = new HashMap<String, String>(1) { 
+            { 
+                put("https://", ARTEMIS_PATH); 
+            } 
+        }; 
+        String redirectUtl = URLEncoder.encode(redirect_uri, "utf-8"); 
+        Map<String,String> paramMap = new HashMap<>(5); 
+        paramMap.put("code", code); 
+        paramMap.put("redirect_uri",redirectUtl); 
+        paramMap.put("grant_type", "authorization_code"); 
+    paramMap.put("client_id", ArtemisConfig.appKey); 
+    paramMap.put("client_secret", ArtemisConfig.appSecret); 
+        String resultJson = ArtemisHttpUtil.doPostFormArtemis(path, paramMap, null, null, null); 
+    } 
+ 
+1.1.3 获取用户信息 
+接口地址：https://ip:port/artemis/api/application/auth/v2/app/oauth2/userinfo 
+请求方式：POST 
+请求参数： 
+参数名 数据类型 参数说明 备注 
+access_token string 授权令牌 请求Header中的参数 
+返回属性： 
+参数名 数据类型 参数说明 备注 
+海康平台Oauth2服务接口说明书           
+userId 
+string 
+用户id  
+返回示例： 
+{ 
+} 
+"code": "0", 
+"msg": "SUCCESS", 
+"data": { 
+"userId": "admin" 

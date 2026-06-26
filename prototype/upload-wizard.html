@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上传向导 - 发电知识中心</title>
+<style>
+/* =========================================================================
+   发电知识中心 · 企业级设计规范 v2.0
+   ========================================================================= */
+:root {
+  --primary: #C7000B;
+  --primary-hover: #D9001B;
+  --primary-active: #A6000A;
+  --primary-bg: #FFF1F0;
+  --primary-bg-hover: #FFD6CC;
+  --primary-border: #FFA39E;
+
+  --success: #00B42A;  --success-bg: #E8FFEA;  --success-border: #C4E8C9;
+  --warning: #FF7D00;  --warning-bg: #FFF7E8;  --warning-border: #FFDDBA;
+  --danger:  #F53F3F;  --danger-bg:  #FFECE8;  --danger-border:  #FFCCC7;
+
+  --text-1: #1D2129;   --text-2: #4E5969;   --text-3: #86909C;   --text-4: #C9CDD4;
+  --border: #E5E6EB;   --border-2: #F2F3F5;
+  --fill-1: #F7F8FA;   --fill-2: #F2F3F5;   --white: #FFFFFF;
+
+  --sider-bg: #1D2129;
+  --sider-text: rgba(255,255,255,0.55);
+  --sider-text-hover: rgba(255,255,255,0.85);
+  --sider-group: rgba(255,255,255,0.35);
+  --sider-hover: rgba(255,255,255,0.05);
+  --sider-active: #C7000B;
+
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px;
+
+  --radius-sm: 4px;  --radius-md: 6px;  --radius-lg: 8px;
+
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-2: 0 2px 8px rgba(0,0,0,0.06);
+
+  --fs-12: 12px; --fs-13: 13px; --fs-14: 14px; --fs-16: 16px; --fs-20: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--fs-14); color: var(--text-1); background: var(--fill-1);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--primary); text-decoration: none; }
+a:hover { color: var(--primary-hover); }
+
+/* ============ 顶栏 ============ */
+.header {
+  height: 48px; background: var(--sider-bg); color: #fff;
+  display: flex; align-items: center; padding: 0 var(--space-6);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+}
+.header-logo { width: 220px; display: flex; align-items: center; gap: var(--space-2); }
+.logo-mark {
+  width: 24px; height: 24px; background: var(--primary); border-radius: var(--radius-sm);
+  position: relative; flex-shrink: 0;
+}
+.logo-mark::before {
+  content: ''; position: absolute; left: 11px; top: 4px;
+  width: 2px; height: 16px; background: #fff;
+}
+.logo-mark::after {
+  content: ''; position: absolute; left: 4px; top: 7px;
+  width: 9px; height: 9px; border: 2px solid #fff; border-radius: 50%;
+  border-top-color: transparent; border-right-color: transparent;
+}
+.logo-text { font-size: var(--fs-16); font-weight: 600; letter-spacing: 0.5px; }
+.header-breadcrumb { flex: 1; font-size: var(--fs-13); color: rgba(255,255,255,0.45); }
+.header-breadcrumb .cur { color: #fff; }
+.header-actions { display: flex; align-items: center; gap: var(--space-4); }
+.header-icon-btn {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); cursor: pointer; color: rgba(255,255,255,0.65);
+  position: relative;
+}
+.header-icon-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.header-icon-btn .dot {
+  position: absolute; top: 6px; right: 6px; width: 6px; height: 6px;
+  background: var(--danger); border-radius: 50%; border: 1.5px solid var(--sider-bg);
+}
+.header-user {
+  display: flex; align-items: center; gap: var(--space-2); cursor: pointer;
+  padding: 0 var(--space-2); height: 32px; border-radius: var(--radius-sm);
+}
+.header-user:hover { background: rgba(255,255,255,0.08); }
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--primary);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-12); font-weight: 500; flex-shrink: 0;
+}
+.user-name { font-size: var(--fs-13); color: #fff; }
+
+/* ============ 顶部导航 ============ */
+.nav {
+  flex: 1; display: flex; align-items: center; height: 100%;
+  margin-left: var(--space-4); gap: 0;
+}
+.nav-item {
+  position: relative; height: 100%; display: flex; align-items: center;
+  padding: 0 var(--space-3); font-size: var(--fs-13);
+  color: rgba(255,255,255,0.65); cursor: pointer;
+  transition: color 0.15s; white-space: nowrap;
+}
+.nav-item:hover { color: #fff; }
+.nav-item.active { color: #fff; }
+.nav-item.active::after {
+  content: ''; position: absolute; left: var(--space-3); right: var(--space-3);
+  bottom: 0; height: 2px; background: var(--primary-hover);
+}
+.nav-arrow {
+  margin-left: 4px; font-size: 10px; opacity: 0.6;
+  display: inline-block; transition: transform 0.15s;
+}
+.nav-item:hover .nav-arrow { transform: rotate(180deg); opacity: 1; }
+.nav-badge {
+  margin-left: 6px; background: var(--danger); color: #fff;
+  font-size: 11px; padding: 0 6px; height: 16px; border-radius: 8px;
+  display: inline-flex; align-items: center; min-width: 16px; justify-content: center;
+}
+
+/* 下拉菜单 */
+.nav-dropdown {
+  position: absolute; top: 100%; left: 0; min-width: 184px;
+  background: var(--white); border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: var(--space-1) 0;
+  display: none; z-index: 200;
+}
+.nav-item:hover .nav-dropdown { display: block; }
+.nav-dropdown::before {
+  content: ''; position: fixed; top: 48px; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+}
+.nav-sub-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-2) var(--space-4); font-size: var(--fs-13);
+  color: var(--text-2); cursor: pointer; transition: all 0.15s;
+}
+.nav-sub-item:hover { background: var(--fill-1); color: var(--primary); }
+.nav-sub-item.active {
+  color: var(--primary); font-weight: 500; background: var(--primary-bg);
+  border-left: 3px solid var(--primary); padding-left: calc(var(--space-4) - 3px);
+}
+.nav-sub-item.disabled { color: var(--text-4); cursor: not-allowed; }
+.nav-sub-item.disabled:hover { background: none; color: var(--text-4); }
+.nav-sub-tag {
+  font-size: 11px; padding: 0 6px; height: 16px; border-radius: var(--radius-sm);
+  background: var(--fill-2); color: var(--text-4);
+  display: inline-flex; align-items: center;
+}
+.nav-sub-badge {
+  background: var(--danger); color: #fff; font-size: 11px;
+  padding: 0 6px; height: 16px; border-radius: 8px;
+  display: inline-flex; align-items: center; min-width: 16px; justify-content: center;
+}
+
+/* ============ 布局 ============ */
+.layout { display: flex; min-height: 100vh; }
+
+/* ============ 主内容 ============ */
+.main {
+  flex: 1; margin-top: 48px; padding: var(--space-6);
+}
+.page-head { margin-bottom: var(--space-6); }
+.page-title { font-size: var(--fs-20); font-weight: 600; color: var(--text-1); margin-bottom: var(--space-1); }
+.page-sub { font-size: var(--fs-13); color: var(--text-3); }
+
+/* ============ 卡片 ============ */
+.card {
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1); padding: var(--space-5); margin-bottom: var(--space-4);
+}
+.card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: var(--space-4);
+}
+.card-title { font-size: var(--fs-16); font-weight: 600; }
+
+/* ============ 按钮 ============ */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 0 var(--space-4); height: 32px; border-radius: var(--radius-sm);
+  font-size: var(--fs-14); cursor: pointer; border: 1px solid transparent;
+  font-weight: 400; transition: all 0.15s; white-space: nowrap; text-decoration: none;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-default { background: var(--white); border-color: var(--border); color: var(--text-2); }
+.btn-default:hover { border-color: var(--primary); color: var(--primary); }
+.btn:disabled { background: var(--fill-2); color: var(--text-4); cursor: not-allowed; border-color: var(--border-2); }
+
+/* ============ 标签 ============ */
+.tag {
+  display: inline-flex; align-items: center; padding: 0 var(--space-2);
+  height: 22px; border-radius: var(--radius-sm); font-size: var(--fs-12);
+  line-height: 1; border: 1px solid transparent;
+}
+.tag-primary { background: var(--primary-bg); color: var(--primary-active); border-color: var(--primary-border); }
+.tag-success { background: var(--success-bg); color: var(--success); border-color: var(--success-border); }
+.tag-warning { background: var(--warning-bg); color: var(--warning); border-color: var(--warning-border); }
+.tag-danger  { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger-border); }
+.tag-default { background: var(--fill-2); color: var(--text-3); }
+
+/* ============ 提示条 ============ */
+.alert {
+  border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);
+  font-size: var(--fs-13);
+}
+.alert-warning { background: var(--warning-bg); border: 1px solid var(--warning-border); color: var(--warning); }
+.alert-primary { background: var(--primary-bg); border: 1px solid var(--primary-border); color: var(--primary-active); }
+
+/* ============ 步骤条 ============ */
+.steps-bar {
+  display: flex; align-items: stretch; background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1); padding: var(--space-5) var(--space-6); margin-bottom: var(--space-5);
+}
+.step-node {
+  flex: 1; display: flex; align-items: center; gap: var(--space-3);
+  cursor: pointer; position: relative; padding: var(--space-1) 0;
+}
+.step-node:not(:last-child)::after {
+  content: ''; flex: 1; height: 2px; background: var(--border-2);
+  margin-left: var(--space-2); min-width: var(--space-6);
+}
+.step-node.done:not(:last-child)::after { background: var(--primary-border); }
+.step-circle {
+  width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: var(--fs-14); font-weight: 600;
+  background: var(--fill-2); color: var(--text-3); border: 2px solid var(--border-2);
+  transition: all 0.25s; flex-shrink: 0;
+}
+.step-node.done .step-circle {
+  background: var(--white); color: var(--primary); border-color: var(--primary);
+}
+.step-node.current .step-circle {
+  background: var(--primary); color: #fff; border-color: var(--primary);
+}
+.step-info { display: flex; flex-direction: column; line-height: 1.3; }
+.step-name { font-size: var(--fs-13); font-weight: 500; color: var(--text-3); }
+.step-node.current .step-name { color: var(--primary-active); font-weight: 600; }
+.step-node.done .step-name { color: var(--text-2); }
+.step-sub { font-size: var(--fs-12); color: var(--text-3); }
+
+/* ============ 步骤面板 ============ */
+.step-panel { display: none; }
+.step-panel.active { display: block; animation: fadeIn 0.25s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.section-title { font-size: var(--fs-16); font-weight: 600; margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-2); }
+.sub-title { font-size: var(--fs-13); font-weight: 600; color: var(--text-1); margin-bottom: var(--space-2); }
+
+/* ============ 采集方式卡片 ============ */
+.source-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); margin-bottom: var(--space-4); }
+.source-card {
+  border: 1px solid var(--border-2); border-radius: var(--radius-lg); padding: var(--space-4);
+  cursor: pointer; background: var(--white); transition: all 0.15s; position: relative;
+}
+.source-card:hover { border-color: var(--primary-border); }
+.source-card.selected { border-color: var(--primary); background: var(--primary-bg); }
+.source-card.disabled { opacity: 0.5; cursor: not-allowed; background: var(--fill-1); }
+.source-card.disabled:hover { border-color: var(--border-2); }
+.source-card .corner-tag { position: absolute; top: var(--space-2); right: var(--space-2); }
+.source-icon { margin-bottom: var(--space-2); color: var(--text-2); }
+.source-card.selected .source-icon { color: var(--primary); }
+.source-name { font-size: var(--fs-13); font-weight: 600; margin-bottom: var(--space-1); }
+.source-desc { font-size: var(--fs-12); color: var(--text-3); line-height: 1.5; }
+
+/* ============ 拖拽上传区 ============ */
+.dropzone {
+  border: 2px dashed var(--border); border-radius: var(--radius-lg); padding: var(--space-8);
+  text-align: center; background: var(--fill-1); transition: all 0.15s; cursor: pointer;
+}
+.dropzone:hover, .dropzone.drag { border-color: var(--primary); background: var(--primary-bg); }
+.dropzone-icon { color: var(--text-3); margin-bottom: var(--space-2); }
+.dropzone:hover .dropzone-icon { color: var(--primary); }
+.dropzone-text { font-size: var(--fs-14); color: var(--text-1); margin-bottom: var(--space-1); }
+.dropzone-hint { font-size: var(--fs-12); color: var(--text-3); }
+
+/* ============ 文件列表 ============ */
+.file-list { margin-top: var(--space-3); }
+.file-item {
+  display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3);
+  border: 1px solid var(--border-2); border-radius: var(--radius-md); margin-bottom: var(--space-2);
+  background: var(--white);
+}
+.file-icon { flex-shrink: 0; color: var(--text-3); }
+.file-info { flex: 1; min-width: 0; }
+.file-name { font-size: var(--fs-13); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-meta { font-size: var(--fs-12); color: var(--text-3); margin-top: var(--space-1); display: flex; align-items: center; gap: var(--space-2); }
+.progress-bar { height: 4px; background: var(--border-2); border-radius: 2px; margin-top: var(--space-1); overflow: hidden; }
+.progress-inner { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.3s; }
+.progress-inner.done { background: var(--success); }
+
+/* ============ 表单 ============ */
+.form-row { margin-bottom: var(--space-3); }
+.form-label { font-size: var(--fs-12); color: var(--text-2); margin-bottom: var(--space-1); }
+.form-input, .form-textarea, .form-select {
+  width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-size: var(--fs-13); font-family: inherit;
+  background: var(--white); color: var(--text-1); transition: border-color 0.15s;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  outline: none; border-color: var(--primary);
+}
+.form-textarea { min-height: 60px; resize: vertical; line-height: 1.6; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+/* ============ 复选列表 ============ */
+.check-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.check-item {
+  display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2);
+  border-radius: var(--radius-sm); background: var(--fill-1); font-size: var(--fs-12);
+  color: var(--text-2);
+}
+.check-item input { accent-color: var(--primary); }
+.check-item.done { background: var(--success-bg); color: var(--success); }
+.check-item .desc { color: var(--text-3); margin-left: auto; font-size: var(--fs-12); }
+
+/* ============ 单选卡片 ============ */
+.radio-cards { display: grid; gap: var(--space-2); margin: var(--space-2) 0; }
+.radio-card {
+  border: 1px solid var(--border-2); border-radius: var(--radius-md); padding: var(--space-3);
+  cursor: pointer; text-align: center; font-size: var(--fs-12); transition: all 0.15s;
+  background: var(--white); color: var(--text-2);
+}
+.radio-card:hover { border-color: var(--primary-border); }
+.radio-card.selected { border-color: var(--primary); background: var(--primary-bg); color: var(--primary-active); font-weight: 600; }
+
+/* ============ 滑块 ============ */
+.slider-row { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2); }
+.slider-row label { font-size: var(--fs-12); color: var(--text-2); width: 110px; flex-shrink: 0; }
+.slider-row input[type=range] { flex: 1; accent-color: var(--primary); }
+.slider-row .val { font-size: var(--fs-12); font-weight: 600; color: var(--primary); width: 50px; text-align: right; }
+
+/* ============ 预览框 ============ */
+.preview-box {
+  background: var(--fill-1); border: 1px solid var(--border-2); border-radius: var(--radius-md);
+  padding: var(--space-3); font-size: var(--fs-12); line-height: 1.6; max-height: 220px;
+  overflow-y: auto; color: var(--text-2);
+}
+.preview-box .head { font-size: var(--fs-12); color: var(--text-3); margin-bottom: var(--space-2); padding-bottom: var(--space-1); border-bottom: 1px dashed var(--border); }
+.preview-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-top: var(--space-2); }
+
+/* ============ AI 标注元素（primary 蓝虚线） ============ */
+.keyword-cloud { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.keyword-chip {
+  background: var(--primary-bg); border: 1px solid var(--primary-border); color: var(--primary-active);
+  padding: var(--space-1) var(--space-3); border-radius: 12px; font-size: var(--fs-12);
+  display: inline-flex; align-items: center; gap: var(--space-1);
+}
+.keyword-chip.ai { border-style: dashed; }
+.keyword-chip .remove { cursor: pointer; color: var(--text-3); }
+
+.ai-block {
+  background: var(--primary-bg); border: 1px dashed var(--primary-border);
+  border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3); font-size: var(--fs-12);
+}
+.ai-block .ai-q { color: var(--primary-active); font-weight: 500; margin-bottom: var(--space-1); }
+
+/* ============ 开关 ============ */
+.switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .slider {
+  position: absolute; inset: 0; background: var(--text-4); border-radius: 20px;
+  cursor: pointer; transition: 0.3s;
+}
+.switch .slider::before {
+  content: ''; position: absolute; height: 16px; width: 16px; left: 2px; bottom: 2px;
+  background: #fff; border-radius: 50%; transition: 0.3s;
+}
+.switch input:checked + .slider { background: var(--primary); }
+.switch input:checked + .slider::before { transform: translateX(16px); }
+
+/* ============ 审核统计 ============ */
+.audit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin: var(--space-2) 0; }
+.audit-cell {
+  border: 1px solid var(--border-2); border-radius: var(--radius-md); padding: var(--space-3);
+  text-align: center; background: var(--white);
+}
+.audit-cell .num { font-size: var(--fs-20); font-weight: 600; color: var(--text-1); }
+.audit-cell .lbl { font-size: var(--fs-12); color: var(--text-3); margin-top: var(--space-1); }
+.audit-cell.warn { border-color: var(--warning-border); background: var(--warning-bg); }
+.audit-cell.warn .num { color: var(--warning); }
+.audit-cell.ok .num { color: var(--success); }
+
+/* ============ 流程节点 ============ */
+.flow-nodes { display: flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; margin-top: var(--space-2); }
+.flow-node {
+  padding: var(--space-2) var(--space-3); background: var(--fill-1); border: 1px solid var(--border-2);
+  border-radius: var(--radius-sm); font-size: var(--fs-12); color: var(--text-2);
+}
+.flow-node.current { background: var(--primary); color: #fff; border-color: var(--primary); }
+.flow-arrow { color: var(--text-3); }
+
+/* ============ 信息汇总行 ============ */
+.summary-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border-2); font-size: var(--fs-13);
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-row .k { color: var(--text-3); }
+.summary-row .v { color: var(--text-1); font-weight: 500; }
+
+/* ============ 步骤底部 ============ */
+.step-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--space-4) 0 0; margin-top: var(--space-2);
+  border-top: 1px solid var(--border-2);
+}
+
+/* ============ 弹窗 ============ */
+.modal-mask {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none;
+  align-items: center; justify-content: center; z-index: 999;
+}
+.modal-mask.show { display: flex; }
+.modal-box {
+  background: var(--white); border-radius: var(--radius-lg); padding: var(--space-8) var(--space-10);
+  max-width: 400px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.modal-icon { margin-bottom: var(--space-3); display: flex; justify-content: center; }
+.modal-title { font-size: var(--fs-18); font-weight: 600; margin-bottom: var(--space-2); }
+.modal-desc { color: var(--text-2); font-size: var(--fs-13); margin-bottom: var(--space-5); line-height: 1.6; }
+
+/* ============ KV 表格 ============ */
+table.kv-table { width: 100%; border-collapse: collapse; font-size: var(--fs-12); }
+table.kv-table th, table.kv-table td { border: 1px solid var(--border-2); padding: var(--space-2) var(--space-3); text-align: left; }
+table.kv-table th { background: var(--fill-1); color: var(--text-2); font-weight: 500; width: 30%; }
+
+/* ============ 面板说明 ============ */
+.panel-desc {
+  color: var(--text-2); font-size: var(--fs-13); margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3); background: var(--primary-bg);
+  border-left: 3px solid var(--primary); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 顶栏 ============ -->
+<header class="header">
+  <div class="header-logo">
+    <div class="logo-mark"></div>
+    <span class="logo-text">发电知识中心</span>
+  </div>
+  <nav class="nav">
+    <a class="nav-item" href="index.html">知识门户首页</a>
+    <a class="nav-item" href="workbench.html">我的工作台<span class="nav-badge">12</span></a>
+    <a class="nav-item" href="dataset.html">知识库管理</a>
+    <div class="nav-item active">知识采集与抽取<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item active" href="upload-wizard.html">手动上传</a>
+        <a class="nav-sub-item" href="documents.html">文档管理</a>
+        <a class="nav-sub-item" href="data-source.html">数据源管理</a>
+      </div>
+    </div>
+    <div class="nav-item">知识处理与加工<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="detail.html">解析与切片</a>
+        <div class="nav-sub-item disabled">清洗·融合·补全<span class="nav-sub-tag">二期</span></div>
+      </div>
+    </div>
+    <div class="nav-item">知识审核<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="audit-workbench.html">人工审核<span class="nav-sub-badge">12</span></a>
+        <a class="nav-sub-item" href="ai-audit-report.html">AI 审核<span class="nav-sub-badge">38</span></a>
+      </div>
+    </div>
+    <div class="nav-item">知识入库<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="knowledge-graph.html">知识图谱</a>
+        <a class="nav-sub-item" href="annotation.html">知识标注</a>
+      </div>
+    </div>
+    <div class="nav-item">知识检索<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="search.html">知识检索</a>
+        <a class="nav-sub-item" href="retrieval-test.html">检索测试</a>
+      </div>
+    </div>
+    <div class="nav-item">智能应用<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="agents.html">智能体管理</a>
+        <a class="nav-sub-item" href="chat.html">智能对话</a>
+      </div>
+    </div>
+    <div class="nav-item">知识统计与分析<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="statistics.html">统计仪表盘</a>
+      </div>
+    </div>
+    <div class="nav-item">运营管理<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="permission.html">权限管理</a>
+        <a class="nav-sub-item" href="version.html">版本管理</a>
+        <a class="nav-sub-item" href="settings.html">系统设置</a>
+      </div>
+    </div>
+  </nav>
+  <div class="header-actions">
+    <div class="header-icon-btn" title="通知">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a4 4 0 014 4v3l1.5 2.5h-11L4 8.5v-3a4 4 0 014-4zM6.5 12.5a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span class="dot"></span>
+    </div>
+    <div class="header-icon-btn" title="帮助">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.3"/><path d="M6.3 6.3a1.7 1.7 0 013.3.6c0 1.2-1.6 1.4-1.6 2.5M8 11.3v.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </div>
+    <div class="header-user">
+      <div class="avatar">张</div>
+      <div class="user-name">张明远</div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- ============ 主内容 ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div class="page-title">手动上传向导</div>
+      <div class="page-sub">按 5 步完成一份知识文档的采集、加工、入库、标注与审核提交</div>
+    </div>
+
+    <!-- 步骤条 -->
+    <div class="steps-bar" id="stepsBar">
+      <div class="step-node current" data-step="1">
+        <div class="step-circle">1</div>
+        <div class="step-info"><div class="step-name">知识采集与抽取</div><div class="step-sub">Acquire</div></div>
+      </div>
+      <div class="step-node" data-step="2">
+        <div class="step-circle">2</div>
+        <div class="step-info"><div class="step-name">知识处理与加工</div><div class="step-sub">Process</div></div>
+      </div>
+      <div class="step-node" data-step="3">
+        <div class="step-circle">3</div>
+        <div class="step-info"><div class="step-name">知识入库</div><div class="step-sub">Ingest</div></div>
+      </div>
+      <div class="step-node" data-step="4">
+        <div class="step-circle">4</div>
+        <div class="step-info"><div class="step-name">知识标注</div><div class="step-sub">Annotate</div></div>
+      </div>
+      <div class="step-node" data-step="5">
+        <div class="step-circle">5</div>
+        <div class="step-info"><div class="step-name">知识审核</div><div class="step-sub">Audit</div></div>
+      </div>
+    </div>
+
+    <!-- ===== 步骤 1：知识采集与抽取 ===== -->
+    <div class="step-panel active" data-panel="1">
+      <div class="panel-desc">从多种数据源采集原始知识文件。当前版本支持本地文件上传，其余采集方式将在二期提供。</div>
+
+      <div class="card">
+        <div class="section-title">采集方式</div>
+        <div class="source-grid">
+          <div class="source-card selected" data-source="file">
+            <span class="corner-tag tag tag-success">已选</span>
+            <div class="source-icon">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><path d="M8 11V2M4.5 5.5L8 2l3.5 3.5M2.5 11.5v2a.5.5 0 00.5.5h10a.5.5 0 00.5-.5v-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="source-name">文件上传</div>
+            <div class="source-desc">支持拖拽，格式 PDF/Word/Excel/PPT/图片/TXT/HTML/CSV，单文件 200MB</div>
+          </div>
+          <div class="source-card disabled">
+            <span class="corner-tag tag tag-default">二期</span>
+            <div class="source-icon">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><ellipse cx="8" cy="3.5" rx="5" ry="1.8" stroke="currentColor" stroke-width="1.3"/><path d="M3 3.5v9c0 1 2.2 1.8 5 1.8s5-.8 5-1.8v-9M3 8c0 1 2.2 1.8 5 1.8s5-.8 5-1.8" stroke="currentColor" stroke-width="1.3"/></svg>
+            </div>
+            <div class="source-name">数据库采集</div>
+            <div class="source-desc">JDBC 连接、Schema 扫描、字段映射</div>
+          </div>
+          <div class="source-card disabled">
+            <span class="corner-tag tag tag-default">二期</span>
+            <div class="source-icon">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M2 8h12M8 2c1.5 1.5 2.5 3.8 2.5 6S9.5 12.5 8 14M8 2C6.5 3.5 5.5 5.8 5.5 8S6.5 12.5 8 14" stroke="currentColor" stroke-width="1.3"/></svg>
+            </div>
+            <div class="source-name">API 接入</div>
+            <div class="source-desc">Pull / Push 模式，RESTful/Webhook</div>
+          </div>
+          <div class="source-card disabled">
+            <span class="corner-tag tag tag-default">二期</span>
+            <div class="source-icon">
+              <svg width="24" height="24" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M5 3v10M11 3v10M2 6h12M2 10h12" stroke="currentColor" stroke-width="1.3"/></svg>
+            </div>
+            <div class="source-name">消息队列</div>
+            <div class="source-desc">Kafka / RabbitMQ 实时接入</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">文件上传</div>
+        <div class="dropzone" id="dropzone">
+          <div class="dropzone-icon">
+            <svg width="40" height="40" viewBox="0 0 16 16" fill="none"><path d="M8 11V2M4.5 5.5L8 2l3.5 3.5M2.5 11.5v2a.5.5 0 00.5.5h10a.5.5 0 00.5-.5v-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="dropzone-text">将文件拖拽到此处，或 <a href="javascript:;">点击选择文件</a></div>
+          <div class="dropzone-hint">支持 PDF / Word / Excel / PPT / 图片 / TXT / HTML / CSV，单文件不超过 200MB</div>
+        </div>
+
+        <div class="file-list">
+          <div class="file-item">
+            <div class="file-icon">
+              <svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M3 1.5h7L13 4.5v10a.5.5 0 01-.5.5h-9a.5.5 0 01-.5-.5V2a.5.5 0 01.5-.5z" stroke="currentColor" stroke-width="1.3"/><path d="M10 1.5V4.5h3" stroke="currentColor" stroke-width="1.3"/></svg>
+            </div>
+            <div class="file-info">
+              <div class="file-name">锅炉过热器温度处置规程.pdf</div>
+              <div class="file-meta">
+                <span>4.2 MB</span>
+                <span class="tag tag-success">MD5 校验通过</span>
+                <span>已完成</span>
+              </div>
+              <div class="progress-bar"><div class="progress-inner done" style="width:100%;"></div></div>
+            </div>
+            <span class="tag tag-success">100%</span>
+          </div>
+          <div class="file-item">
+            <div class="file-icon">
+              <svg width="22" height="22" viewBox="0 0 16 16" fill="none"><path d="M3 1.5h7L13 4.5v10a.5.5 0 01-.5.5h-9a.5.5 0 01-.5-.5V2a.5.5 0 01.5-.5z" stroke="currentColor" stroke-width="1.3"/><path d="M10 1.5V4.5h3" stroke="currentColor" stroke-width="1.3"/></svg>
+            </div>
+            <div class="file-info">
+              <div class="file-name">DL-T_5145-2024脱硫设计规范.pdf</div>
+              <div class="file-meta">
+                <span>18.6 MB</span>
+                <span class="tag tag-primary live-tag">上传中</span>
+                <span>预计 8 秒</span>
+              </div>
+              <div class="progress-bar"><div class="progress-inner" id="liveProgress" style="width:65%;"></div></div>
+            </div>
+            <span class="tag tag-primary live-pct">65%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-default" disabled>上一步</button>
+        <button class="btn btn-primary" onclick="goStep(2)">下一步：知识处理与加工</button>
+      </div>
+    </div>
+
+    <!-- ===== 步骤 2：知识处理与加工 ===== -->
+    <div class="step-panel" data-panel="2">
+      <div class="panel-desc">解析、清洗、切分为知识切片，为后续入库与检索做准备。</div>
+      <div class="alert alert-primary">
+        <span>解析与切分能力由 RAGFlow DeepDoc 引擎提供，支持 OCR、表格结构识别 TSR、版面分析与公式保留。</span>
+      </div>
+
+      <div class="card">
+        <div class="section-title">子步骤 1 / 3：解析</div>
+        <div class="form-grid-2">
+          <div>
+            <div class="sub-title">解析能力</div>
+            <div class="check-list">
+              <div class="check-item done"><input type="checkbox" checked> OCR 文字识别 <span class="desc">99.2% 准确率</span></div>
+              <div class="check-item done"><input type="checkbox" checked> 表格结构识别 TSR <span class="desc">12 个表格</span></div>
+              <div class="check-item done"><input type="checkbox" checked> 图片描述生成 <span class="desc">8 张图</span></div>
+              <div class="check-item done"><input type="checkbox" checked> 公式识别 <span class="desc">LaTeX 输出</span></div>
+              <div class="check-item"><input type="checkbox"> 版面分析（布局还原） <span class="desc">可选</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="sub-title">解析结果预览（第 8 页片段）</div>
+            <div class="preview-box">
+              <div class="head">PDF 原文 - 结构化文本</div>
+              <p>当过热器管壁温度超过设计值 <b>580C</b> 时，应立即采取以下措施：</p>
+              <p>1. 降低锅炉负荷至 80% 额定负荷；</p>
+              <p>2. 检查减温水流量是否正常，必要时手动开大减温水调节阀；</p>
+              <table class="kv-table" style="margin-top:6px;">
+                <tr><th>参数</th><th>报警值</th><th>动作值</th></tr>
+                <tr><td>管壁温度</td><td>565C</td><td>580C</td></tr>
+                <tr><td>主汽温</td><td>541C</td><td>555C</td></tr>
+              </table>
+              <p style="margin-top:6px;">公式示例： = (Q<sub>in</sub> - Q<sub>out</sub>) / Q<sub>in</sub>  100%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">子步骤 2 / 3：清洗（责任链管道）</div>
+        <div style="font-size:var(--fs-12);color:var(--text-3);margin-bottom:var(--space-2);">基于 RAGFlow 预处理规则 + 外部管道增强，处理器可插拔、可调整顺序。</div>
+        <div class="check-list">
+          <div class="check-item done"><input type="checkbox" checked> 字符规范化 <span class="desc">全角转半角、繁简转换</span></div>
+          <div class="check-item done"><input type="checkbox" checked> OCR 纠错 <span class="desc">基于电力术语词典</span></div>
+          <div class="check-item done"><input type="checkbox" checked> 噪声过滤 <span class="desc">去除页眉页脚、水印</span></div>
+          <div class="check-item done"><input type="checkbox" checked> 空白清理 <span class="desc">多余空行/空格</span></div>
+          <div class="check-item done"><input type="checkbox" checked> 全角半角统一 <span class="desc">数字、标点</span></div>
+          <div class="check-item done"><input type="checkbox" checked> 编码修正 <span class="desc">GBK 转 UTF-8</span></div>
+          <div class="check-item"><input type="checkbox"> 实体对齐 <span class="desc">#1炉 = 1号机组</span></div>
+          <div class="check-item"><input type="checkbox"> 数据补全 <span class="desc">引用标准号补全</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">子步骤 3 / 3：切分</div>
+
+        <div class="sub-title">切片方法</div>
+        <div class="radio-cards" style="grid-template-columns:repeat(4,1fr);">
+          <div class="radio-card selected" data-method="general">通用切分</div>
+          <div class="radio-card" data-method="qa">Q&A 解析</div>
+          <div class="radio-card" data-method="kg">知识图谱</div>
+          <div class="radio-card" data-method="manual">手动</div>
+        </div>
+
+        <div class="slider-row">
+          <label>分段最大长度</label>
+          <input type="range" min="128" max="1024" step="32" value="256" oninput="this.nextElementSibling.textContent=this.value">
+          <span class="val">256</span>
+        </div>
+        <div class="slider-row">
+          <label>重叠长度</label>
+          <input type="range" min="0" max="200" step="10" value="50" oninput="this.nextElementSibling.textContent=this.value">
+          <span class="val">50</span>
+        </div>
+
+        <div class="form-grid-2" style="margin-top:var(--space-2);">
+          <div class="form-row">
+            <div class="form-label">分片标识符前缀</div>
+            <input class="form-input" value="BLR-GC-600MW-">
+          </div>
+          <div class="form-row">
+            <div class="form-label">预处理规则</div>
+            <select class="form-select">
+              <option>电力行业 - 规程类</option>
+              <option>电力行业 - 标准类</option>
+              <option>通用 - 默认</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">Embedding 模型</div>
+            <select class="form-select">
+              <option>bge-large-zh-v1.5（推荐）</option>
+              <option>bge-m3</option>
+              <option>m3e-base</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">Rerank 模型</div>
+            <select class="form-select">
+              <option>bge-reranker-v2-m3</option>
+              <option>不使用 Rerank</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sub-title" style="margin-top:var(--space-3);">切片预览（共生成 12 个切片，展示前 3 个）</div>
+        <div class="preview-split">
+          <div class="preview-box">
+            <div class="head">原文</div>
+            <p style="margin-bottom:6px;"><b>第 8 页：</b>当过热器管壁温度超过设计值580C时，应立即采取以下措施：1. 降低锅炉负荷至80%额定负荷；2. 检查减温水流量是否正常...</p>
+            <p style="margin-bottom:6px;"><b>第 9 页：</b>若上述措施无效且温度持续上升超过600C，应紧急停炉。停炉操作按以下步骤执行：关闭给煤机、切断燃料供应...</p>
+            <p><b>第 10 页：</b>过热器管壁温度监测点的布置要求：每根管圈的出口段应设置温度测点，测点间距不大于15米...</p>
+          </div>
+          <div class="preview-box">
+            <div class="head">切片结果</div>
+            <p style="margin-bottom:6px;"><span class="tag tag-primary">#1</span> 当过热器管壁温度超过设计值580C时，应立即采取以下措施：1. 降低锅炉负荷至80%额定负荷；2. 检查减温水流量是否正常，必要时手动开大减温水调节阀；3. 调整燃烧器倾角向下，降低火焰中心；4. 加强对过热器各管壁温度的监视。</p>
+            <p style="margin-bottom:6px;"><span class="tag tag-primary">#2</span> 若上述措施无效且温度持续上升超过600C，应紧急停炉。停炉操作按以下步骤执行：关闭给煤机、切断燃料供应、开启疏水阀、维持汽包水位...</p>
+            <p><span class="tag tag-primary">#3</span> 过热器管壁温度监测点的布置要求：每根管圈的出口段应设置温度测点，测点间距不大于15米，数据采集频率不低于1次/分钟。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-default" onclick="goStep(1)">上一步</button>
+        <button class="btn btn-primary" onclick="goStep(3)">下一步：知识入库</button>
+      </div>
+    </div>
+
+    <!-- ===== 步骤 3：知识入库 ===== -->
+    <div class="step-panel" data-panel="3">
+      <div class="panel-desc">向量化、元数据配置、图谱构建、QA 增强，完成后知识将写入向量库与图谱库。</div>
+
+      <div class="card">
+        <div class="section-title">向量化</div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <div class="form-label">Embedding 模型</div>
+            <input class="form-input" value="bge-large-zh-v1.5" readonly style="background:var(--fill-1);">
+          </div>
+          <div class="form-row">
+            <div class="form-label">预计生成向量数</div>
+            <input class="form-input" value="12 个切片  1024 维" readonly style="background:var(--fill-1);">
+          </div>
+          <div class="form-row">
+            <div class="form-label">向量库</div>
+            <select class="form-select">
+              <option>Infinity（RAGFlow 内置，推荐）</option>
+              <option>Elasticsearch</option>
+              <option>Milvus（二期）</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">距离度量</div>
+            <select class="form-select">
+              <option>余弦相似度 Cosine</option>
+              <option>内积 Inner Product</option>
+              <option>L2 欧氏距离</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">元数据填写</div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <div class="form-label">知识标题 <span style="color:var(--danger);">*</span></div>
+            <input class="form-input" value="锅炉过热器温度处置规程（600MW机组）">
+          </div>
+          <div class="form-row">
+            <div class="form-label">业务分类 <span style="color:var(--danger);">*</span></div>
+            <select class="form-select">
+              <option>运行规程</option>
+              <option>检修规程</option>
+              <option>故障案例</option>
+              <option>行业标准</option>
+              <option>技术监督</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">所属部门</div>
+            <select class="form-select">
+              <option>集团生产部 - 锅炉专业</option>
+              <option>#1 机组 - 运行一班</option>
+              <option>技术中心 - 热动所</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">适用机组</div>
+            <select class="form-select">
+              <option>通用（#1-#4）</option>
+              <option>#1 机组</option>
+              <option>#2 机组</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">数据密级</div>
+            <select class="form-select">
+              <option>内部</option>
+              <option>公开</option>
+              <option>秘密</option>
+              <option>机密</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">标签</div>
+            <input class="form-input" value="过热器, 温度异常, 减温水, 紧急停炉">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="card">
+          <div class="section-title">知识图谱构建 <span class="tag tag-primary">AI</span></div>
+          <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-2);">
+            <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            <span style="font-size:var(--fs-13);font-weight:600;color:var(--success);">已开启</span>
+          </div>
+          <div style="font-size:var(--fs-12);color:var(--text-2);line-height:1.6;">
+            基于 LightRAG 自动抽取实体关系，构建设备-参数-动作三元组。
+          </div>
+          <div style="margin-top:var(--space-2);">
+            <span class="tag tag-primary">预计实体 28 个</span>
+            <span class="tag tag-primary">预计关系 45 条</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">QA 增强 <span class="tag tag-primary">AI</span></div>
+          <div style="display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-2);">
+            <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            <span style="font-size:var(--fs-13);font-weight:600;color:var(--success);">已开启</span>
+          </div>
+          <div style="font-size:var(--fs-12);color:var(--text-2);margin-bottom:var(--space-2);">
+            LLM 自动生成问答对，增强多跳问答能力。
+          </div>
+          <div class="ai-block">
+            <div class="ai-q">Q: 过热器管壁温度到多少度必须紧急停炉？</div>
+            <div style="color:var(--text-2);">A: 超过 600C 且持续上升时，汇报值长后紧急停炉。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-default" onclick="goStep(2)">上一步</button>
+        <button class="btn btn-primary" onclick="goStep(4)">下一步：知识标注</button>
+      </div>
+    </div>
+
+    <!-- ===== 步骤 4：知识标注 ===== -->
+    <div class="step-panel" data-panel="4">
+      <div class="panel-desc">AI 自动标注 + 人工校验。关键词、分类、摘要、预期问题均已由 LLM 预生成，可直接确认或修改。</div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">切片 #1 标注预览</div>
+          <span class="tag tag-default">锅炉过热器温度处置规程.pdf - 第8页</span>
+        </div>
+
+        <div style="background:var(--fill-1);border:1px solid var(--border-2);border-radius:var(--radius-md);padding:var(--space-3);font-size:var(--fs-13);line-height:1.8;margin-bottom:var(--space-4);">
+          当过热器管壁温度超过设计值 <b>580C</b> 时，应立即采取以下措施：1. 降低锅炉负荷至 80% 额定负荷；2. 检查减温水流量是否正常，必要时手动开大减温水调节阀；3. 调整燃烧器倾角向下，降低火焰中心；4. 加强对过热器各管壁温度的监视，每 15 分钟记录一次。
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">关键词标签云 <span class="tag tag-primary" style="margin-left:6px;">AI 自动生成</span></div>
+          <div class="keyword-cloud">
+            <span class="keyword-chip ai">过热器 <span class="remove">x</span></span>
+            <span class="keyword-chip ai">580C <span class="remove">x</span></span>
+            <span class="keyword-chip ai">降负荷 <span class="remove">x</span></span>
+            <span class="keyword-chip ai">减温水 <span class="remove">x</span></span>
+            <span class="keyword-chip ai">紧急停炉 <span class="remove">x</span></span>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-row">
+            <div class="form-label">分类建议</div>
+            <select class="form-select">
+              <option>运行规程</option>
+              <option>故障案例</option>
+              <option>行业标准</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-label">重要度</div>
+            <input class="form-input" type="range" min="1" max="10" value="8" style="padding:0;">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">摘要 <span class="tag tag-primary" style="margin-left:6px;">AI 自动生成</span></div>
+          <textarea class="form-textarea">规定了过热器管壁温度超限（580C）时的四级处置措施：降负荷、调减温水、调燃烧器、加强监视；温度达 600C 时须紧急停炉。</textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">预期问题 <span class="tag tag-primary" style="margin-left:6px;">AI 自动生成</span></div>
+          <div class="ai-block">
+            <div class="ai-q">Q: 过热器管壁温度超过多少度需要降负荷？</div>
+            <div style="color:var(--text-2);">A: 超过设计值 580C 时应立即将锅炉负荷降至 80% 额定负荷。</div>
+          </div>
+          <div class="ai-block">
+            <div class="ai-q">Q: 温度达到 600C 时如何处置？</div>
+            <div style="color:var(--text-2);">A: 汇报值长并准备紧急停炉，按停炉操作规程执行。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning">
+        <span>共 <strong>12 个切片</strong>待标注，可在此批量确认或逐一修改，也可提交后到知识标注工作台精修。<a href="annotation.html" style="margin-left:var(--space-2);">前往标注工作台</a></span>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-default" onclick="goStep(3)">上一步</button>
+        <button class="btn btn-primary" onclick="goStep(5)">下一步：知识审核</button>
+      </div>
+    </div>
+
+    <!-- ===== 步骤 5：知识审核 ===== -->
+    <div class="step-panel" data-panel="5">
+      <div class="panel-desc">AI 预审 + 选择审核模板 + 提交。提交后知识将进入对应审核流程的首个节点。</div>
+
+      <div class="card">
+        <div class="section-title">AI 预审结果 <span class="tag tag-primary">AI</span></div>
+        <div style="font-size:var(--fs-12);color:var(--text-3);margin-bottom:var(--space-3);">对全部 12 个切片执行 6 类自动检测，结果如下：</div>
+        <div class="audit-grid">
+          <div class="audit-cell ok"><div class="num">0</div><div class="lbl">矛盾检测</div></div>
+          <div class="audit-cell warn"><div class="num">1</div><div class="lbl">错误检测</div></div>
+          <div class="audit-cell ok"><div class="num">0</div><div class="lbl">时效性</div></div>
+          <div class="audit-cell ok"><div class="num">0</div><div class="lbl">完整性</div></div>
+          <div class="audit-cell ok"><div class="num">0</div><div class="lbl">一致性</div></div>
+          <div class="audit-cell ok"><div class="num">0</div><div class="lbl">规范性</div></div>
+        </div>
+        <div class="alert alert-warning" style="margin-top:var(--space-2);margin-bottom:0;">
+          <span><strong>错误检测 1 项：</strong>切片 #1 中"管壁温度设计值 580C"与 DL/T 5145-2024 标准条款 4.3.2 记录的"565C"存在差异，建议核实。</span>
+        </div>
+        <div style="margin-top:var(--space-2);"><a href="ai-audit-report.html" style="font-size:var(--fs-13);font-weight:600;">查看详情</a></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">审核模板</div>
+        <div class="radio-cards" style="grid-template-columns:repeat(3,1fr);">
+          <div class="radio-card selected" data-template="level3">三级集团审核</div>
+          <div class="radio-card" data-template="level1">一级直审</div>
+          <div class="radio-card" data-template="level2">两级审核</div>
+        </div>
+        <div style="font-size:var(--fs-12);color:var(--text-3);margin-bottom:var(--space-1);">根据业务分类"运行规程"自动推荐：三级集团审核</div>
+
+        <div class="flow-nodes">
+          <div class="flow-node current">班组初审</div>
+          <span class="flow-arrow">-</span>
+          <div class="flow-node">部门复审</div>
+          <span class="flow-arrow">-</span>
+          <div class="flow-node">集团批准</div>
+          <span class="flow-arrow">-</span>
+          <div class="flow-node">入库发布</div>
+        </div>
+        <div style="font-size:var(--fs-12);color:var(--text-3);margin-top:var(--space-2);">预计耗时：3-5 个工作日 - 当前节点：班组初审（待提交）</div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">信息汇总</div>
+        <div class="summary-row"><span class="k">采集方式</span><span class="v">文件上传 - 2 个文件</span> <a href="javascript:goStep(1);" style="font-size:var(--fs-12);">修改</a></div>
+        <div class="summary-row"><span class="k">切分配置</span><span class="v">通用切分 - 256 token - 重叠 50</span> <a href="javascript:goStep(2);" style="font-size:var(--fs-12);">修改</a></div>
+        <div class="summary-row"><span class="k">向量化</span><span class="v">bge-large-zh-v1.5 - 12 个向量</span> <a href="javascript:goStep(3);" style="font-size:var(--fs-12);">修改</a></div>
+        <div class="summary-row"><span class="k">元数据</span><span class="v">运行规程 - 内部 - #1-#4 通用</span> <a href="javascript:goStep(3);" style="font-size:var(--fs-12);">修改</a></div>
+        <div class="summary-row"><span class="k">标注状态</span><span class="v">12 / 12 切片已自动标注</span> <a href="javascript:goStep(4);" style="font-size:var(--fs-12);">修改</a></div>
+        <div class="summary-row"><span class="k">知识图谱</span><span class="v">已开启（LightRAG）</span></div>
+        <div class="summary-row"><span class="k">QA 增强</span><span class="v">已开启</span></div>
+      </div>
+
+      <div class="card">
+        <label style="display:flex;align-items:center;gap:var(--space-2);font-size:var(--fs-13);cursor:pointer;">
+          <input type="checkbox" checked style="accent-color:var(--primary);"> 提交后通知审核人（班组：王值长、部门：李主任）
+        </label>
+      </div>
+
+      <div class="step-footer">
+        <button class="btn btn-default" onclick="goStep(4)">上一步</button>
+        <button class="btn btn-primary" style="padding:0 var(--space-6);font-size:var(--fs-14);" onclick="submitAudit()">提交审核</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- 成功弹窗 -->
+<div class="modal-mask" id="successModal">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <svg width="48" height="48" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="var(--success)" stroke-width="1.3"/><path d="M5 8l2 2 4-4" stroke="var(--success)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="modal-title">已提交，进入企业初审节点</div>
+    <div class="modal-desc">知识"锅炉过热器温度处置规程（600MW机组）"已进入<strong>班组初审</strong>节点，审核人将收到系统通知。您可在「我的工作台」跟踪审核进度。</div>
+    <div style="display:flex;gap:var(--space-2);justify-content:center;">
+      <a href="workbench.html" class="btn btn-primary">前往工作台</a>
+      <button class="btn btn-default" onclick="document.getElementById('successModal').classList.remove('show')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var currentStep = 1;
+var totalSteps = 5;
+
+function renderSteps() {
+  var nodes = document.querySelectorAll('#stepsBar .step-node');
+  nodes.forEach(function(node) {
+    var s = parseInt(node.dataset.step);
+    node.classList.remove('current', 'done');
+    var circle = node.querySelector('.step-circle');
+    if (s < currentStep) {
+      node.classList.add('done');
+      circle.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3.5 8l3 3 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    } else if (s === currentStep) {
+      node.classList.add('current');
+      circle.textContent = s;
+    } else {
+      circle.textContent = s;
+    }
+  });
+  document.querySelectorAll('.step-panel').forEach(function(p) {
+    p.classList.toggle('active', parseInt(p.dataset.panel) === currentStep);
+  });
+}
+
+function goStep(step) {
+  if (step < 1 || step > totalSteps) return;
+  currentStep = step;
+  renderSteps();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('#stepsBar .step-node').forEach(function(node) {
+  node.addEventListener('click', function() {
+    goStep(parseInt(this.dataset.step));
+  });
+});
+
+document.querySelectorAll('.source-card:not(.disabled)').forEach(function(card) {
+  card.addEventListener('click', function() {
+    document.querySelectorAll('.source-card:not(.disabled)').forEach(function(c) {
+      c.classList.remove('selected');
+      var tag = c.querySelector('.corner-tag');
+      if (tag) { tag.classList.remove('tag-success'); tag.classList.add('tag-default'); tag.textContent = ''; }
+    });
+    this.classList.add('selected');
+    var tag = this.querySelector('.corner-tag');
+    if (tag) { tag.classList.remove('tag-default'); tag.classList.add('tag-success'); tag.textContent = '已选'; }
+    else {
+      tag = document.createElement('span');
+      tag.className = 'corner-tag tag tag-success';
+      tag.textContent = '已选';
+      this.appendChild(tag);
+    }
+  });
+});
+
+document.querySelectorAll('.radio-card').forEach(function(card) {
+  card.addEventListener('click', function() {
+    var siblings = this.parentElement.querySelectorAll('.radio-card');
+    siblings.forEach(function(s) { s.classList.remove('selected'); });
+    this.classList.add('selected');
+  });
+});
+
+var dz = document.getElementById('dropzone');
+if (dz) {
+  ['dragenter', 'dragover'].forEach(function(ev) {
+    dz.addEventListener(ev, function(e) { e.preventDefault(); this.classList.add('drag'); });
+  });
+  ['dragleave', 'drop'].forEach(function(ev) {
+    dz.addEventListener(ev, function(e) { e.preventDefault(); this.classList.remove('drag'); });
+  });
+  dz.addEventListener('click', function() {
+    alert('原型演示：文件选择对话框已模拟。');
+  });
+}
+
+var liveP = document.getElementById('liveProgress');
+if (liveP) {
+  var pct = 65;
+  var timer = setInterval(function() {
+    pct += Math.random() * 3;
+    if (pct >= 100) {
+      pct = 100;
+      clearInterval(timer);
+      liveP.classList.add('done');
+      var liveTag = document.querySelector('.live-tag');
+      var livePct = document.querySelector('.live-pct');
+      if (liveTag) { liveTag.className = 'tag tag-success live-tag'; liveTag.textContent = 'MD5 校验通过'; }
+      if (livePct) { livePct.className = 'tag tag-success live-pct'; livePct.textContent = '100%'; }
+    }
+    liveP.style.width = pct + '%';
+  }, 1200);
+}
+
+document.querySelectorAll('.keyword-chip .remove').forEach(function(r) {
+  r.addEventListener('click', function(e) {
+    e.stopPropagation();
+    this.parentElement.remove();
+  });
+});
+
+function submitAudit() {
+  document.getElementById('successModal').classList.add('show');
+}
+
+renderSteps();
+</script>
+
+</body>
+</html>

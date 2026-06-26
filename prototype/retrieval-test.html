@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检索测试 - 发电知识中心</title>
+<style>
+/* =========================================================================
+   发电知识中心 · 企业级设计规范 v2.0
+   严格复用 index.html :root 变量与组件
+   ========================================================================= */
+:root {
+  --primary: #C7000B;
+  --primary-hover: #D9001B;
+  --primary-active: #A6000A;
+  --primary-bg: #FFF1F0;
+  --primary-bg-hover: #FFD6CC;
+  --primary-border: #FFA39E;
+
+  --success: #00B42A;  --success-bg: #E8FFEA;  --success-border: #C4E8C9;
+  --warning: #FF7D00;  --warning-bg: #FFF7E8;  --warning-border: #FFDDBA;
+  --danger:  #F53F3F;  --danger-bg:  #FFECE8;  --danger-border:  #FFCCC7;
+
+  --text-1: #1D2129;
+  --text-2: #4E5969;
+  --text-3: #86909C;
+  --text-4: #C9CDD4;
+  --border: #E5E6EB;
+  --border-2: #F2F3F5;
+  --fill-1: #F7F8FA;
+  --fill-2: #F2F3F5;
+  --white: #FFFFFF;
+
+  --sider-bg: #1D2129;
+  --sider-text: rgba(255,255,255,0.55);
+  --sider-text-hover: rgba(255,255,255,0.85);
+  --sider-group: rgba(255,255,255,0.35);
+  --sider-hover: rgba(255,255,255,0.05);
+  --sider-active: #C7000B;
+
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-2: 0 2px 8px rgba(0,0,0,0.06);
+
+  --fs-12: 12px; --fs-13: 13px; --fs-14: 14px; --fs-16: 16px;
+  --fs-18: 18px; --fs-20: 20px; --fs-24: 24px; --fs-30: 30px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--fs-14); color: var(--text-1); background: var(--fill-1);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--primary); text-decoration: none; }
+a:hover { color: var(--primary-hover); }
+
+/* ============ 顶栏 ============ */
+.header {
+  height: 48px; background: var(--sider-bg); color: #fff;
+  display: flex; align-items: center; padding: 0 var(--space-6);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+}
+.header-logo { width: 220px; display: flex; align-items: center; gap: var(--space-2); }
+.logo-mark {
+  width: 24px; height: 24px; background: var(--primary); border-radius: var(--radius-sm);
+  position: relative; flex-shrink: 0;
+}
+.logo-mark::before {
+  content: ''; position: absolute; left: 11px; top: 4px;
+  width: 2px; height: 16px; background: #fff;
+}
+.logo-mark::after {
+  content: ''; position: absolute; left: 4px; top: 7px;
+  width: 9px; height: 9px; border: 2px solid #fff; border-radius: 50%;
+  border-top-color: transparent; border-right-color: transparent;
+}
+.logo-text { font-size: var(--fs-16); font-weight: 600; letter-spacing: 0.5px; }
+.header-actions { display: flex; align-items: center; gap: var(--space-4); }
+
+/* ============ 顶部导航 ============ */
+.nav {
+  flex: 1; display: flex; align-items: center; height: 100%;
+  margin-left: var(--space-4); gap: 0;
+}
+.nav-item {
+  position: relative; height: 100%; display: flex; align-items: center;
+  padding: 0 var(--space-3); font-size: var(--fs-13);
+  color: rgba(255,255,255,0.65); cursor: pointer;
+  transition: color 0.15s; white-space: nowrap;
+}
+.nav-item:hover { color: #fff; }
+.nav-item.active { color: #fff; }
+.nav-item.active::after {
+  content: ''; position: absolute; left: var(--space-3); right: var(--space-3);
+  bottom: 0; height: 2px; background: var(--primary-hover);
+}
+.nav-arrow {
+  margin-left: 4px; font-size: 10px; opacity: 0.6;
+  display: inline-block; transition: transform 0.15s;
+}
+.nav-item:hover .nav-arrow { transform: rotate(180deg); opacity: 1; }
+.nav-badge {
+  margin-left: 6px; background: var(--danger); color: #fff;
+  font-size: 11px; padding: 0 6px; height: 16px; border-radius: 8px;
+  display: inline-flex; align-items: center; min-width: 16px; justify-content: center;
+}
+
+/* 下拉菜单 */
+.nav-dropdown {
+  position: absolute; top: 100%; left: 0; min-width: 184px;
+  background: var(--white); border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: var(--space-1) 0;
+  display: none; z-index: 200;
+}
+.nav-item:hover .nav-dropdown { display: block; }
+.nav-dropdown::before {
+  content: ''; position: fixed; top: 48px; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+}
+.nav-sub-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-2) var(--space-4); font-size: var(--fs-13);
+  color: var(--text-2); cursor: pointer; transition: all 0.15s;
+}
+.nav-sub-item:hover { background: var(--fill-1); color: var(--primary); }
+.nav-sub-item.active {
+  color: var(--primary); font-weight: 500; background: var(--primary-bg);
+  border-left: 3px solid var(--primary); padding-left: calc(var(--space-4) - 3px);
+}
+.nav-sub-item.disabled { color: var(--text-4); cursor: not-allowed; }
+.nav-sub-item.disabled:hover { background: none; color: var(--text-4); }
+.nav-sub-tag {
+  font-size: 11px; padding: 0 6px; height: 16px; border-radius: var(--radius-sm);
+  background: var(--fill-2); color: var(--text-4);
+  display: inline-flex; align-items: center;
+}
+.nav-sub-badge {
+  background: var(--danger); color: #fff; font-size: 11px;
+  padding: 0 6px; height: 16px; border-radius: 8px;
+  display: inline-flex; align-items: center; min-width: 16px; justify-content: center;
+}
+.header-icon-btn {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); cursor: pointer; color: rgba(255,255,255,0.65);
+  position: relative;
+}
+.header-icon-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.header-icon-btn .dot {
+  position: absolute; top: 6px; right: 6px; width: 6px; height: 6px;
+  background: var(--danger); border-radius: 50%; border: 1.5px solid var(--sider-bg);
+}
+.header-user {
+  display: flex; align-items: center; gap: var(--space-2); cursor: pointer;
+  padding: 0 var(--space-2); height: 32px; border-radius: var(--radius-sm);
+}
+.header-user:hover { background: rgba(255,255,255,0.08); }
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--primary);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-12); font-weight: 500; flex-shrink: 0;
+}
+.user-name { font-size: var(--fs-13); color: #fff; }
+
+/* ============ 布局 ============ */
+.layout { display: flex; min-height: 100vh; }
+
+/* ============ 主内容 ============ */
+.main {
+  flex: 1; margin-top: 48px; padding: var(--space-6);
+}
+.page-head { margin-bottom: var(--space-4); }
+.page-title { font-size: var(--fs-20); font-weight: 600; color: var(--text-1); margin-bottom: var(--space-1); }
+.page-sub { font-size: var(--fs-13); color: var(--text-3); }
+
+/* ============ 卡片 ============ */
+.card {
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1); padding: var(--space-5);
+}
+.card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: var(--space-4);
+}
+.card-title { font-size: var(--fs-16); font-weight: 600; }
+.card-link { font-size: var(--fs-13); }
+
+/* ============ 按钮 ============ */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 0 var(--space-4); height: 32px; border-radius: var(--radius-sm);
+  font-size: var(--fs-14); cursor: pointer; border: 1px solid transparent;
+  font-weight: 400; transition: all 0.15s; white-space: nowrap;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-default { background: var(--white); border-color: var(--border); color: var(--text-2); }
+.btn-default:hover { border-color: var(--primary); color: var(--primary); }
+.btn-text { background: none; color: var(--primary); padding: 0 var(--space-2); height: auto; }
+.btn-text:hover { color: var(--primary-hover); }
+.btn-lg { height: 40px; padding: 0 var(--space-6); font-size: var(--fs-14); }
+
+/* ============ 标签 ============ */
+.tag {
+  display: inline-flex; align-items: center; padding: 0 var(--space-2);
+  height: 22px; border-radius: var(--radius-sm); font-size: var(--fs-12);
+  line-height: 1; border: 1px solid transparent;
+}
+.tag-primary { background: var(--primary-bg); color: var(--primary-active); border-color: var(--primary-border); }
+.tag-success { background: var(--success-bg); color: var(--success); border-color: var(--success-border); }
+.tag-warning { background: var(--warning-bg); color: var(--warning); border-color: var(--warning-border); }
+.tag-danger  { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger-border); }
+.tag-default { background: var(--fill-2); color: var(--text-3); }
+
+/* ============ 双栏布局 ============ */
+.test-layout { display: flex; gap: var(--space-4); align-items: flex-start; }
+
+/* ============ 配置面板 ============ */
+.config-panel {
+  width: 320px; flex-shrink: 0; position: sticky; top: 56px;
+}
+.config-panel .card { padding: var(--space-5); }
+.config-group { margin-bottom: var(--space-5); }
+.config-group:last-child { margin-bottom: 0; }
+.config-label {
+  display: block; font-size: var(--fs-13); font-weight: 500; color: var(--text-1);
+  margin-bottom: var(--space-2);
+}
+.config-input,
+.config-select {
+  width: 100%; height: 32px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0 var(--space-3);
+  font-size: var(--fs-13); color: var(--text-1); background: var(--white); outline: none;
+}
+.config-input:focus,
+.config-select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-bg); }
+.config-select { cursor: pointer; }
+
+/* 滑块 */
+.slider-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+.slider-row .slider-name { font-size: var(--fs-13); color: var(--text-2); }
+.slider-row .slider-value {
+  font-size: var(--fs-13); font-weight: 600; color: var(--primary-active);
+  background: var(--primary-bg); padding: 0 var(--space-2); height: 22px;
+  border-radius: var(--radius-sm); display: flex; align-items: center;
+}
+.config-slider {
+  width: 100%; height: 4px; background: var(--border); border-radius: 2px;
+  appearance: none; outline: none; cursor: pointer;
+}
+.config-slider::-webkit-slider-thumb {
+  appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--primary); border: 2px solid var(--white);
+  box-shadow: 0 1px 4px rgba(199,0,11,0.4); cursor: pointer;
+}
+.config-slider::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--primary); border: 2px solid var(--white);
+  box-shadow: 0 1px 4px rgba(199,0,11,0.4); cursor: pointer;
+}
+
+/* 单选组 */
+.radio-group {
+  display: flex; background: var(--fill-1); border-radius: var(--radius-sm);
+  padding: 2px; gap: 2px;
+}
+.radio-group label {
+  flex: 1; text-align: center; padding: var(--space-2) 0; font-size: var(--fs-13);
+  color: var(--text-2); cursor: pointer; border-radius: var(--radius-sm);
+  transition: all 0.15s;
+}
+.radio-group label:hover { color: var(--primary); }
+.radio-group input { display: none; }
+.radio-group input:checked + span {
+  display: block; background: var(--white); color: var(--primary-active);
+  font-weight: 500; box-shadow: var(--shadow-1); border-radius: var(--radius-sm);
+  padding: var(--space-2) 0; margin: -8px;
+}
+.radio-group label.active {
+  background: var(--white); color: var(--primary-active);
+  font-weight: 500; box-shadow: var(--shadow-1);
+}
+
+/* 模型显示 */
+.model-display {
+  background: var(--fill-1); border-radius: var(--radius-md);
+  padding: var(--space-3); font-size: var(--fs-13);
+}
+.model-display .model-name { color: var(--text-1); font-weight: 500; }
+.model-display .model-info { color: var(--text-3); font-size: var(--fs-12); margin-top: var(--space-1); }
+
+/* 按钮区 */
+.config-actions {
+  display: flex; gap: var(--space-2); margin-top: var(--space-5);
+  padding-top: var(--space-5); border-top: 1px solid var(--border-2);
+}
+.config-actions .btn { flex: 1; justify-content: center; }
+
+/* ============ 结果区 ============ */
+.result-area { flex: 1; min-width: 0; }
+.result-bar {
+  display: flex; align-items: center; gap: var(--space-6);
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-5); margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-1);
+}
+.result-stat-item {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: var(--fs-13); color: var(--text-3);
+}
+.result-stat-item strong {
+  font-size: var(--fs-18); font-weight: 600; color: var(--primary-active);
+}
+.result-stat-divider {
+  width: 1px; height: 24px; background: var(--border);
+}
+
+/* 召回卡片 */
+.recall-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.recall-item {
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1); padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--border-2); transition: all 0.15s;
+}
+.recall-item:hover { border-color: var(--primary-border); box-shadow: var(--shadow-2); }
+.recall-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+.recall-title { font-size: var(--fs-14); font-weight: 500; color: var(--text-1); }
+.recall-body {
+  font-size: var(--fs-13); color: var(--text-2); line-height: 1.7;
+  background: var(--fill-1); border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4); margin-bottom: var(--space-3);
+  border-left: 3px solid var(--primary-border);
+}
+.recall-body mark {
+  background: var(--primary-bg); color: var(--primary-active);
+  padding: 0 2px; border-radius: 2px;
+}
+.recall-meta {
+  display: flex; align-items: center; gap: var(--space-3);
+  font-size: var(--fs-12); color: var(--text-3);
+}
+
+/* ============ 历史记录表格 ============ */
+.history-card { margin-top: var(--space-5); }
+.table-wrap { overflow-x: auto; }
+.data-table {
+  width: 100%; border-collapse: collapse; font-size: var(--fs-13);
+}
+.data-table thead th {
+  background: var(--fill-1); color: var(--text-2); font-weight: 500;
+  padding: var(--space-3) var(--space-4); text-align: left;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.data-table tbody td {
+  padding: var(--space-3) var(--space-4); color: var(--text-2);
+  border-bottom: 1px solid var(--border-2);
+}
+.data-table tbody tr:hover { background: var(--fill-1); }
+.data-table .text-primary { color: var(--primary-active); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- ============ 顶栏 ============ -->
+<header class="header">
+  <div class="header-logo">
+    <div class="logo-mark"></div>
+    <span class="logo-text">发电知识中心</span>
+  </div>
+  <nav class="nav">
+    <a class="nav-item" href="index.html">知识门户首页</a>
+    <a class="nav-item" href="workbench.html">我的工作台<span class="nav-badge">12</span></a>
+    <a class="nav-item" href="dataset.html">知识库管理</a>
+    <div class="nav-item">知识采集与抽取<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="upload-wizard.html">手动上传</a>
+        <a class="nav-sub-item" href="documents.html">文档管理</a>
+        <a class="nav-sub-item" href="data-source.html">数据源管理</a>
+      </div>
+    </div>
+    <div class="nav-item">知识处理与加工<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="detail.html">解析与切片</a>
+        <div class="nav-sub-item disabled">清洗·融合·补全<span class="nav-sub-tag">二期</span></div>
+      </div>
+    </div>
+    <div class="nav-item">知识审核<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="audit-workbench.html">人工审核<span class="nav-sub-badge">12</span></a>
+        <a class="nav-sub-item" href="ai-audit-report.html">AI 审核<span class="nav-sub-badge">38</span></a>
+      </div>
+    </div>
+    <div class="nav-item">知识入库<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="knowledge-graph.html">知识图谱</a>
+        <a class="nav-sub-item" href="annotation.html">知识标注</a>
+      </div>
+    </div>
+    <div class="nav-item active">知识检索<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="search.html">知识检索</a>
+        <a class="nav-sub-item active" href="retrieval-test.html">检索测试</a>
+      </div>
+    </div>
+    <div class="nav-item">智能应用<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="agents.html">智能体管理</a>
+        <a class="nav-sub-item" href="chat.html">智能对话</a>
+      </div>
+    </div>
+    <div class="nav-item">知识统计与分析<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="statistics.html">统计仪表盘</a>
+      </div>
+    </div>
+    <div class="nav-item">运营管理<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="permission.html">权限管理</a>
+        <a class="nav-sub-item" href="version.html">版本管理</a>
+        <a class="nav-sub-item" href="settings.html">系统设置</a>
+      </div>
+    </div>
+  </nav>
+  <div class="header-actions">
+    <div class="header-icon-btn" title="通知">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a4 4 0 014 4v3l1.5 2.5h-11L4 8.5v-3a4 4 0 014-4zM6.5 12.5a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span class="dot"></span>
+    </div>
+    <div class="header-icon-btn" title="帮助">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.3"/><path d="M6.3 6.3a1.7 1.7 0 013.3.6c0 1.2-1.6 1.4-1.6 2.5M8 11.3v.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </div>
+    <div class="header-user">
+      <div class="avatar">张</div>
+      <div class="user-name">张明远</div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- ============ 主内容 ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div class="page-title">检索测试</div>
+      <div class="page-sub">验证知识库召回质量，调优检索参数与策略</div>
+    </div>
+
+    <div class="test-layout">
+      <!-- ============ 配置面板 ============ -->
+      <div class="config-panel">
+        <div class="card">
+          <!-- 知识库 -->
+          <div class="config-group">
+            <label class="config-label">知识库</label>
+            <select class="config-select">
+              <option>运行规程库（3,254 篇）</option>
+              <option>故障案例库（945 篇）</option>
+              <option>行业标准库（1,872 篇）</option>
+              <option>全部知识库</option>
+            </select>
+          </div>
+
+          <!-- 关键词 -->
+          <div class="config-group">
+            <label class="config-label">查询关键词</label>
+            <input class="config-input" type="text" value="过热器管壁温度超限" />
+          </div>
+
+          <!-- topK -->
+          <div class="config-group">
+            <div class="slider-row">
+              <span class="slider-name">Top K</span>
+              <span class="slider-value">8</span>
+            </div>
+            <input class="config-slider" type="range" min="1" max="20" value="8" />
+          </div>
+
+          <!-- 相似度阈值 -->
+          <div class="config-group">
+            <div class="slider-row">
+              <span class="slider-name">相似度阈值</span>
+              <span class="slider-value">0.55</span>
+            </div>
+            <input class="config-slider" type="range" min="0" max="100" value="55" />
+          </div>
+
+          <!-- 检索模式 -->
+          <div class="config-group">
+            <label class="config-label">检索模式</label>
+            <div class="radio-group">
+              <label class="active">向量</label>
+              <label>BM25</label>
+              <label>混合</label>
+            </div>
+          </div>
+
+          <!-- Embedding 模型 -->
+          <div class="config-group">
+            <label class="config-label">Embedding 模型</label>
+            <div class="model-display">
+              <div class="model-name">bge-large-zh-v1.5</div>
+              <div class="model-info">1024 维 · 中文优化 · 本地部署</div>
+            </div>
+          </div>
+
+          <!-- Rerank 模型 -->
+          <div class="config-group">
+            <label class="config-label">Rerank 模型</label>
+            <div class="model-display">
+              <div class="model-name">bge-reranker-v2-m3</div>
+              <div class="model-info">多语言 · 支持长文本 · 本地部署</div>
+            </div>
+          </div>
+
+          <!-- 按钮区 -->
+          <div class="config-actions">
+            <button class="btn btn-primary">开始测试</button>
+            <button class="btn btn-default">保存</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 结果区 ============ -->
+      <div class="result-area">
+        <!-- 统计条 -->
+        <div class="result-bar">
+          <div class="result-stat-item">
+            <span>召回数</span>
+            <strong>8</strong>
+          </div>
+          <div class="result-stat-divider"></div>
+          <div class="result-stat-item">
+            <span>耗时</span>
+            <strong>0.32s</strong>
+          </div>
+          <div class="result-stat-divider"></div>
+          <div class="result-stat-item">
+            <span>平均分</span>
+            <strong>0.76</strong>
+          </div>
+          <div class="result-stat-divider"></div>
+          <div class="result-stat-item">
+            <span>高于阈值</span>
+            <strong>6</strong>
+            <span style="color:var(--text-3);">/ 8</span>
+          </div>
+        </div>
+
+        <!-- 召回结果列表 -->
+        <div class="recall-list">
+          <!-- 召回 1 -->
+          <div class="recall-item">
+            <div class="recall-head">
+              <div class="recall-title">#3-过热器-末级-处置规程-第4章</div>
+              <span class="tag tag-success">0.94</span>
+            </div>
+            <div class="recall-body">
+              当 <mark>过热器管壁温度超限</mark> 达到报警值时，值班员应立即检查给煤量与风煤比，必要时投入一级减温水。若末级过热器出口温度持续超过 595℃，应降负荷 10%-15%，并联系热控人员核实测点有效性。
+            </div>
+            <div class="recall-meta">
+              <span class="tag tag-primary">运行规程</span>
+              <span>来源：600MW 机组运行规程.pdf</span>
+              <span>位置：第 142 页 · 第 3-8 段</span>
+            </div>
+          </div>
+
+          <!-- 召回 2 -->
+          <div class="recall-item">
+            <div class="recall-head">
+              <div class="recall-title">T91 管材长期超温蠕变寿命评估</div>
+              <span class="tag tag-success">0.89</span>
+            </div>
+            <div class="recall-body">
+              T91 钢在 <mark>过热器管壁温度超限</mark> 工况下，Larson-Miller 参数 P = T(C + log t) × 10^-3，其中 C = 20。当壁温达 620℃、运行 10^4 小时后，持久强度损失约 18%；10^5 小时损失达 35%。
+            </div>
+            <div class="recall-meta">
+              <span class="tag tag-primary">行业标准</span>
+              <span>来源：DL/T 1317-2024 过热器管材寿命评估导则.pdf</span>
+              <span>位置：第 8 页 · 附录 B</span>
+            </div>
+          </div>
+
+          <!-- 召回 3 -->
+          <div class="recall-item">
+            <div class="recall-head">
+              <div class="recall-title">#3 炉减温水阀门卡涩故障分析</div>
+              <span class="tag tag-success">0.86</span>
+            </div>
+            <div class="recall-body">
+              故障现象：2024-05-18 02:15，DCS 显示 #3 炉 <mark>过热器管壁温度超限</mark> 最高 612℃，一级减温水流量由 85 t/h 骤降至 12 t/h。检查发现减温水调节阀 CV-301 定位器气源管路密封圈老化断裂。
+            </div>
+            <div class="recall-meta">
+              <span class="tag tag-primary">故障案例</span>
+              <span>来源：2024-05 故障分析报告.docx</span>
+              <span>位置：第 2 页 · 第 1 段</span>
+            </div>
+          </div>
+
+          <!-- 召回 4 -->
+          <div class="recall-item">
+            <div class="recall-head">
+              <div class="recall-title">减温水投切逻辑优化</div>
+              <span class="tag tag-primary">0.78</span>
+            </div>
+            <div class="recall-body">
+              原 PID 控制策略在煤质突变时响应滞后，导致 <mark>过热器管壁温度超限</mark> 频发。优化方案将一级减温水预投阈值由 545℃ 下调至 538℃，投切速率限制由 3%/min 收紧至 2%/min。
+            </div>
+            <div class="recall-meta">
+              <span class="tag tag-primary">技术报告</span>
+              <span>来源：DCS 控制策略优化方案.pdf</span>
+              <span>位置：第 5 页 · 第 2 节</span>
+            </div>
+          </div>
+
+          <!-- 召回 5 -->
+          <div class="recall-item">
+            <div class="recall-head">
+              <div class="recall-title">金属壁温在线监测系统</div>
+              <span class="tag tag-primary">0.72</span>
+            </div>
+            <div class="recall-body">
+              系统对 <mark>过热器管壁温度超限</mark> 实行三色预警：黄色 585℃、橙色 595℃、红色 605℃。测点采样周期 5s，数据通过 OPC UA 接入 SIS 平台，并联动 DCS 报警一览。
+            </div>
+            <div class="recall-meta">
+              <span class="tag tag-primary">技术报告</span>
+              <span>来源：壁温监测系统改造总结.docx</span>
+              <span>位置：第 3 页 · 第 4 节</span>
+            </div>
+          </div>
+
+          <!-- 召回 6 -->
+          <div class="recall-item">
+            <div class="recall-head">
+              <div class="recall-title">锅炉四管泄漏防治指导意见</div>
+              <span class="tag tag-primary">0.68</span>
+            </div>
+            <div class="recall-body">
+              <mark>过热器管壁温度超限</mark> 是引发四管泄漏的首要诱因。指导意见要求建立管排温差热偏差档案，每月开展红外热像检测，对偏差超过 20℃ 的管排列入月度检查重点。
+            </div>
+            <div class="recall-meta">
+              <span class="tag tag-primary">行业标准</span>
+              <span>来源：锅炉四管泄漏防治指导意见.pdf</span>
+              <span>位置：第 11 页 · 第 3.2 节</span>
+            </div>
+          </div>
+
+          <!-- 召回 7 -->
+          <div class="recall-item">
+            <div class="recall-head">
+              <div class="recall-title">DCS 汽温控制响应时间优化</div>
+              <span class="tag tag-default">0.52</span>
+            </div>
+            <div class="recall-body">
+              引入 Smith 预估器补偿减温水-汽温响应的纯滞后（约 60s），配合前馈控制将 <mark>过热器管壁温度超限</mark> 的调节响应时间由 90s 缩短至 35s。
+            </div>
+            <div class="recall-meta">
+              <span class="tag tag-primary">技术报告</span>
+              <span>来源：DCS 控制策略优化方案.pdf</span>
+              <span>位置：第 12 页 · 第 4.1 节</span>
+            </div>
+          </div>
+
+          <!-- 召回 8 -->
+          <div class="recall-item">
+            <div class="recall-head">
+              <div class="recall-title">金属监督检验频次要求</div>
+              <span class="tag tag-default">0.48</span>
+            </div>
+            <div class="recall-body">
+              对 <mark>过热器管壁温度超限</mark> 的管段应增加超声测厚与复膜金相检查频次，重点监测 T91/TP347H 钢的球化等级。四级以上球化应进行剩余寿命评估，必要时安排更换。
+            </div>
+            <div class="recall-meta">
+              <span class="tag tag-primary">行业标准</span>
+              <span>来源：DL/T 438-2022 金属监督检验规程.pdf</span>
+              <span>位置：第 18 页 · 第 5.3 节</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 历史记录表格 ============ -->
+    <div class="card history-card">
+      <div class="card-head">
+        <div class="card-title">历史测试记录</div>
+        <a class="card-link" href="#">导出全部</a>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>关键词</th>
+              <th>检索模式</th>
+              <th>Top K</th>
+              <th>召回数</th>
+              <th>平均分</th>
+              <th>耗时</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2024-06-16 10:32</td>
+              <td class="text-primary">过热器管壁温度超限</td>
+              <td>向量</td>
+              <td>8</td>
+              <td>8</td>
+              <td class="text-primary">0.76</td>
+              <td>0.32s</td>
+              <td><a href="#">查看</a></td>
+            </tr>
+            <tr>
+              <td>2024-06-16 09:18</td>
+              <td class="text-primary">凝汽器真空下降</td>
+              <td>混合</td>
+              <td>10</td>
+              <td>10</td>
+              <td class="text-primary">0.81</td>
+              <td>0.45s</td>
+              <td><a href="#">查看</a></td>
+            </tr>
+            <tr>
+              <td>2024-06-15 16:40</td>
+              <td class="text-primary">汽轮机轴向位移异常</td>
+              <td>向量</td>
+              <td>5</td>
+              <td>5</td>
+              <td class="text-primary">0.72</td>
+              <td>0.28s</td>
+              <td><a href="#">查看</a></td>
+            </tr>
+            <tr>
+              <td>2024-06-15 14:15</td>
+              <td class="text-primary">磨煤机防爆门动作</td>
+              <td>BM25</td>
+              <td>8</td>
+              <td>6</td>
+              <td class="text-primary">0.65</td>
+              <td>0.18s</td>
+              <td><a href="#">查看</a></td>
+            </tr>
+            <tr>
+              <td>2024-06-14 11:22</td>
+              <td class="text-primary">环保岛超低排放</td>
+              <td>混合</td>
+              <td>10</td>
+              <td>9</td>
+              <td class="text-primary">0.78</td>
+              <td>0.52s</td>
+              <td><a href="#">查看</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

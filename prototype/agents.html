@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能体管理 - 发电知识中心</title>
+<style>
+:root{--primary:#C7000B;--primary-hover:#D9001B;--primary-active:#A6000A;--primary-bg:#FFF1F0;--primary-bg-hover:#FFD6CC;--primary-border:#FFA39E;--success:#00B42A;--success-bg:#E8FFEA;--success-border:#C4E8C9;--warning:#FF7D00;--warning-bg:#FFF7E8;--warning-border:#FFDDBA;--danger:#F53F3F;--danger-bg:#FFECE8;--danger-border:#FFCCC7;--text-1:#1D2129;--text-2:#4E5969;--text-3:#86909C;--text-4:#C9CDD4;--border:#E5E6EB;--border-2:#F2F3F5;--fill-1:#F7F8FA;--fill-2:#F2F3F5;--white:#FFF;--sider-bg:#1D2129;--sider-text:rgba(255,255,255,0.55);--sider-text-hover:rgba(255,255,255,0.85);--sider-group:rgba(255,255,255,0.35);--sider-hover:rgba(255,255,255,0.05);--sider-active:#C7000B;--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-8:32px;--space-10:40px;--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--shadow-1:0 1px 2px rgba(0,0,0,0.04);--shadow-2:0 2px 8px rgba(0,0,0,0.06);--fs-12:12px;--fs-13:13px;--fs-14:14px;--fs-16:16px;--fs-18:18px;--fs-20:20px;--fs-24:24px;--fs-30:30px}
+*{margin:0;padding:0;box-sizing:border-box}html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:var(--fs-14);color:var(--text-1);background:var(--fill-1);-webkit-font-smoothing:antialiased}
+a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-hover)}
+.header{height:48px;background:var(--sider-bg);color:#fff;display:flex;align-items:center;padding:0 var(--space-6);position:fixed;top:0;left:0;right:0;z-index:100}
+.header-logo{width:180px;display:flex;align-items:center;gap:var(--space-2);flex-shrink:0}
+.logo-mark{width:24px;height:24px;background:var(--primary);border-radius:var(--radius-sm);position:relative;flex-shrink:0}
+.logo-mark::before{content:'';position:absolute;left:11px;top:4px;width:2px;height:16px;background:#fff}
+.logo-mark::after{content:'';position:absolute;left:4px;top:7px;width:9px;height:9px;border:2px solid #fff;border-radius:50%;border-top-color:transparent;border-right-color:transparent}
+.logo-text{font-size:var(--fs-16);font-weight:600;letter-spacing:0.5px}
+.header-actions{display:flex;align-items:center;gap:var(--space-4);margin-left:auto}
+.header-icon-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);cursor:pointer;color:rgba(255,255,255,0.65);position:relative}
+.header-icon-btn:hover{background:rgba(255,255,255,0.08);color:#fff}
+.header-icon-btn .dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:var(--danger);border-radius:50%;border:1.5px solid var(--sider-bg)}
+.header-user{display:flex;align-items:center;gap:var(--space-2);cursor:pointer;padding:0 var(--space-2);height:32px;border-radius:var(--radius-sm)}
+.header-user:hover{background:rgba(255,255,255,0.08)}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--fs-12);font-weight:500;flex-shrink:0}
+.user-name{font-size:var(--fs-13);color:#fff}
+.nav{flex:1;display:flex;align-items:center;height:100%;margin-left:var(--space-4);gap:0}
+.nav-item{position:relative;height:100%;display:flex;align-items:center;padding:0 var(--space-3);font-size:var(--fs-13);color:rgba(255,255,255,0.65);cursor:pointer;transition:color 0.15s;white-space:nowrap}
+.nav-item:hover{color:#fff}
+.nav-item.active{color:#fff}
+.nav-item.active::after{content:'';position:absolute;left:var(--space-3);right:var(--space-3);bottom:0;height:2px;background:var(--primary-hover)}
+.nav-arrow{margin-left:4px;font-size:10px;opacity:0.6;display:inline-block;transition:transform 0.15s}
+.nav-item:hover .nav-arrow{transform:rotate(180deg);opacity:1}
+.nav-badge{margin-left:6px;background:var(--danger);color:#fff;font-size:11px;padding:0 6px;height:16px;border-radius:8px;display:inline-flex;align-items:center;min-width:16px;justify-content:center}
+.nav-dropdown{position:absolute;top:100%;left:0;min-width:184px;background:var(--white);border-radius:0 0 var(--radius-md) var(--radius-md);box-shadow:0 4px 16px rgba(0,0,0,0.12);padding:var(--space-1) 0;display:none;z-index:200}
+.nav-item:hover .nav-dropdown{display:block}
+.nav-sub-item{display:flex;align-items:center;justify-content:space-between;padding:var(--space-2) var(--space-4);font-size:var(--fs-13);color:var(--text-2);cursor:pointer;transition:all 0.15s}
+.nav-sub-item:hover{background:var(--fill-1);color:var(--primary)}
+.nav-sub-item.active{color:var(--primary);font-weight:500;background:var(--primary-bg);border-left:3px solid var(--primary);padding-left:calc(var(--space-4) - 3px)}
+.nav-sub-item.disabled{color:var(--text-4);cursor:not-allowed}
+.nav-sub-item.disabled:hover{background:none;color:var(--text-4)}
+.nav-sub-tag{font-size:11px;padding:0 6px;height:16px;border-radius:var(--radius-sm);background:var(--fill-2);color:var(--text-4);display:inline-flex;align-items:center}
+.nav-sub-badge{background:var(--danger);color:#fff;font-size:11px;padding:0 6px;height:16px;border-radius:8px;display:inline-flex;align-items:center;min-width:16px;justify-content:center}
+.layout{display:flex;min-height:100vh}
+.main{flex:1;margin-top:48px;padding:var(--space-6)}
+.page-head{margin-bottom:var(--space-5);display:flex;justify-content:space-between;align-items:flex-start}
+.page-title{font-size:var(--fs-20);font-weight:600;margin-bottom:var(--space-1)}
+.page-sub{font-size:var(--fs-13);color:var(--text-3)}
+.btn{display:inline-flex;align-items:center;gap:var(--space-1);padding:0 var(--space-4);height:32px;border-radius:var(--radius-sm);font-size:var(--fs-14);cursor:pointer;border:1px solid transparent;font-weight:400;transition:all 0.15s;white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}
+.btn-default{background:var(--white);border-color:var(--border);color:var(--text-2)}.btn-default:hover{border-color:var(--primary);color:var(--primary)}
+.btn-text{background:none;color:var(--primary);padding:0 var(--space-2);height:auto;font-size:var(--fs-13)}.btn-text:hover{color:var(--primary-hover)}
+.btn-text.danger{color:var(--danger)}.btn-text.danger:hover{color:#d33a3a}
+.btn-sm{height:26px;padding:0 var(--space-3);font-size:var(--fs-12)}
+.tag{display:inline-flex;align-items:center;padding:0 var(--space-2);height:22px;border-radius:var(--radius-sm);font-size:var(--fs-12);line-height:1;border:1px solid transparent}
+.tag-primary{background:var(--primary-bg);color:var(--primary-active);border-color:var(--primary-border)}
+.tag-success{background:var(--success-bg);color:var(--success);border-color:var(--success-border)}
+.tag-warning{background:var(--warning-bg);color:var(--warning);border-color:var(--warning-border)}
+.tag-danger{background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border)}
+.tag-default{background:var(--fill-2);color:var(--text-3)}
+.card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);padding:var(--space-5)}
+.alert{border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4);display:flex;align-items:center;gap:var(--space-2);font-size:var(--fs-13)}
+.alert-primary{background:var(--primary-bg);border:1px solid var(--primary-border);color:var(--primary-active)}
+.alert code{background:rgba(0,0,0,0.06);padding:1px 6px;border-radius:3px;font-size:12px;font-family:Consolas,Monaco,monospace}
+.toolbar{display:flex;gap:var(--space-3);margin-bottom:var(--space-4);align-items:center}
+.toolbar input,.toolbar select{padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:var(--fs-13);outline:none;background:#fff}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--primary)}
+.toolbar .grow{flex:1}
+.api-tag{font-family:Consolas,Monaco,monospace;font-size:11px;background:var(--fill-2);color:var(--text-3);padding:1px 6px;border-radius:3px}
+.agent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4)}
+.agent-card{background:#fff;border:1px solid var(--border-2);border-radius:var(--radius-lg);padding:var(--space-5);transition:all 0.15s;position:relative;display:flex;flex-direction:column}
+.agent-card:hover{border-color:var(--primary);box-shadow:var(--shadow-2)}
+.agent-badge-top{position:absolute;top:var(--space-3);right:var(--space-4)}
+.agent-head{display:flex;align-items:flex-start;gap:var(--space-3);margin-bottom:var(--space-3)}
+.agent-icon{width:40px;height:40px;border-radius:var(--radius-md);background:var(--primary-bg);color:var(--primary-active);display:flex;align-items:center;justify-content:center;font-size:var(--fs-18);font-weight:600;flex-shrink:0;border:1px solid var(--primary-border)}
+.agent-title{flex:1;min-width:0}
+.agent-name{font-size:var(--fs-16);font-weight:600;margin-bottom:2px}
+.agent-desc{font-size:var(--fs-12);color:var(--text-3);line-height:1.5}
+.agent-meta{padding:var(--space-2) 0;border-top:1px solid var(--border-2);border-bottom:1px solid var(--border-2);margin:var(--space-3) 0;display:flex;justify-content:space-between;font-size:var(--fs-12)}
+.agent-meta .meta-num{font-size:var(--fs-16);font-weight:600;color:var(--text-1)}
+.agent-meta .meta-label{color:var(--text-3);font-size:11px;margin-top:2px}
+.agent-kbs{margin-bottom:var(--space-3)}
+.agent-kbs-label{font-size:11px;color:var(--text-3);margin-bottom:var(--space-2)}
+.agent-kbs-list{display:flex;flex-wrap:wrap;gap:4px}
+.agent-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:var(--space-3);border-top:1px solid var(--border-2)}
+.agent-time{font-size:11px;color:var(--text-4)}
+.agent-ops{display:flex;gap:2px}
+.agent-new{border:2px dashed var(--border);background:transparent;box-shadow:none;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;color:var(--text-3);min-height:220px;transition:all 0.15s}
+.agent-new:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg)}
+.agent-new .plus{font-size:32px;font-weight:200;line-height:1;margin-bottom:var(--space-2)}
+.agent-new .new-text{font-size:var(--fs-14)}
+.agent-new .new-hint{font-size:11px;color:var(--text-4);margin-top:4px}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">
+    <div class="logo-mark"></div>
+    <span class="logo-text">发电知识中心</span>
+  </div>
+  <nav class="nav">
+    <a class="nav-item" href="index.html">知识门户首页</a>
+    <a class="nav-item" href="workbench.html">我的工作台<span class="nav-badge">12</span></a>
+    <a class="nav-item" href="dataset.html">知识库管理</a>
+    <div class="nav-item">知识采集与抽取<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="upload-wizard.html">手动上传</a>
+        <a class="nav-sub-item" href="documents.html">文档管理</a>
+        <a class="nav-sub-item" href="data-source.html">数据源管理</a>
+      </div>
+    </div>
+    <div class="nav-item">知识处理与加工<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="detail.html">解析与切片</a>
+        <div class="nav-sub-item disabled">清洗·融合·补全<span class="nav-sub-tag">二期</span></div>
+      </div>
+    </div>
+    <div class="nav-item">知识审核<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="audit-workbench.html">人工审核<span class="nav-sub-badge">12</span></a>
+        <a class="nav-sub-item" href="ai-audit-report.html">AI 审核<span class="nav-sub-badge">38</span></a>
+      </div>
+    </div>
+    <div class="nav-item">知识入库<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="knowledge-graph.html">知识图谱</a>
+        <a class="nav-sub-item" href="annotation.html">知识标注</a>
+      </div>
+    </div>
+    <div class="nav-item">知识检索<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="search.html">知识检索</a>
+        <a class="nav-sub-item" href="retrieval-test.html">检索测试</a>
+      </div>
+    </div>
+    <div class="nav-item active">智能应用<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item active" href="agents.html">智能体管理</a>
+        <a class="nav-sub-item" href="chat.html">智能对话</a>
+      </div>
+    </div>
+    <div class="nav-item">知识统计与分析<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="statistics.html">统计仪表盘</a>
+      </div>
+    </div>
+    <div class="nav-item">运营管理<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="permission.html">权限管理</a>
+        <a class="nav-sub-item" href="version.html">版本管理</a>
+        <a class="nav-sub-item" href="settings.html">系统设置</a>
+      </div>
+    </div>
+  </nav>
+  <div class="header-actions">
+    <div class="header-icon-btn" title="通知"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a4 4 0 014 4v3l1.5 2.5h-11L4 8.5v-3a4 4 0 014-4zM6.5 12.5a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="dot"></span></div>
+    <div class="header-user"><div class="avatar">张</div><div class="user-name">张明远</div></div>
+  </div>
+</header>
+
+<div class="layout">
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <div class="page-title">智能体管理</div>
+        <div class="page-sub">基于 RAGFlow Agent 的智能体编排与管理 · 对应 RAGFlow <code style="background:var(--fill-2);padding:1px 6px;border-radius:3px;font-size:12px;">AGENT MANAGEMENT</code> 接口</div>
+      </div>
+      <button class="btn btn-primary" onclick="location.href='chat.html'">+ 新建 Agent</button>
+    </div>
+
+    <div class="alert alert-primary">
+      <span>Agent 编排由 RAGFlow 原生支持。接口：<code>GET /api/v1/agents</code> 列表；<code>POST /api/v1/agents</code> 创建；<code>PUT /api/v1/agents/{id}</code> 更新；<code>DELETE /api/v1/agents/{id}</code> 删除。Agent 可结合 OpenAI-Compatible API 的 agent completion 调用。</span>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="搜索智能体名称" class="grow" oninput="filterAgents()">
+      <select id="statusSelect" onchange="filterAgents()">
+        <option value="">全部状态</option>
+        <option value="已发布">已发布</option>
+        <option value="草稿">草稿</option>
+      </select>
+      <button class="btn btn-default" onclick="filterAgents()">查询</button>
+    </div>
+
+    <div class="agent-grid" id="agentGrid"></div>
+  </main>
+</div>
+
+<script>
+var agents = [
+  {key:"YZ",name:"运行指导智能体",desc:"针对锅炉/汽机启停、参数调整、异常处置提供分步骤运行操作指导，融合规程条款与实时工况。",kbs:["锅炉规程库","汽机规程库"],status:"已发布",calls:8452,time:"2026-06-15 16:42"},
+  {key:"GZ",name:"故障诊断智能体",desc:"结合历史故障案例与设备台账，对 DCS 报警进行根因定位并输出处置建议与同类案例参考。",kbs:["故障案例库","设备台账库"],status:"已发布",calls:6231,time:"2026-06-14 10:18"},
+  {key:"GC",name:"规程问答智能体",desc:"面向运行/检修人员的规程条款精确问答，支持条款溯源、版本对比与跨标准引用。",kbs:["锅炉规程库","行业标准库"],status:"已发布",calls:12085,time:"2026-06-16 09:05"},
+  {key:"PX",name:"培训考核智能体",desc:"基于全库知识生成岗位练兵题库与情景演练，支持自动判分与薄弱知识点画像。",kbs:["全库"],status:"已发布",calls:3420,time:"2026-06-12 14:30"},
+  {key:"JX",name:"检修辅助智能体",desc:"依据设备台账与检修规程生成标准化作业指导书，支持工单物料关联与安全措施核对。",kbs:["设备台账库"],status:"已发布",calls:2156,time:"2026-06-10 11:22"},
+  {key:"AJ",name:"安监合规智能体",desc:"结合行业标准与两票日志，对作业流程进行合规性审查并输出反违章清单。",kbs:["行业标准库","两票日志库"],status:"已发布",calls:1872,time:"2026-06-08 15:48"},
+  {key:"FZ",name:"仿真推演智能体",desc:"基于锅炉规程库构建工况仿真，支持超温/超压等极端工况的推演与处置决策预演。",kbs:["锅炉规程库"],status:"草稿",calls:0,time:"2026-06-16 17:20"}
+];
+
+function statusTag(s){
+  if(s==='已发布')return '<span class="tag tag-success">已发布</span>';
+  return '<span class="tag tag-default">草稿</span>';
+}
+function kbTags(arr){
+  return arr.map(function(k){return '<span class="api-tag">'+k+'</span>';}).join('');
+}
+function renderAgent(a){
+  var disabledOps = a.status==='草稿';
+  return '<div class="agent-card">'+
+    '<span class="agent-badge-top"><span class="tag tag-default">RAGFlow Agent</span></span>'+
+    '<div class="agent-head">'+
+      '<div class="agent-icon">'+a.key+'</div>'+
+      '<div class="agent-title">'+
+        '<div class="agent-name">'+a.name+'</div>'+
+        '<div class="agent-desc">'+a.desc+'</div>'+
+        '<div style="margin-top:6px;">'+statusTag(a.status)+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="agent-meta">'+
+      '<div><div class="meta-num">'+a.calls.toLocaleString()+'</div><div class="meta-label">累计调用</div></div>'+
+      '<div style="text-align:right;"><div class="meta-num">'+a.kbs.length+'</div><div class="meta-label">关联知识库</div></div>'+
+    '</div>'+
+    '<div class="agent-kbs">'+
+      '<div class="agent-kbs-label">关联知识库</div>'+
+      '<div class="agent-kbs-list">'+kbTags(a.kbs)+'</div>'+
+    '</div>'+
+    '<div class="agent-foot">'+
+      '<span class="agent-time">更新于 '+a.time+'</span>'+
+      '<div class="agent-ops">'+
+        '<button class="btn btn-text btn-sm" onclick="location.href=\'chat.html\'" '+(disabledOps?'disabled style="opacity:0.5;cursor:not-allowed;"':'')+'>对话</button>'+
+        '<button class="btn btn-text btn-sm">编辑</button>'+
+        '<button class="btn btn-text btn-sm danger">删除</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+function renderNew(){
+  return '<div class="agent-card agent-new" onclick="location.href=\'chat.html\'">'+
+    '<div class="plus">+</div>'+
+    '<div class="new-text">新建 Agent</div>'+
+    '<div class="new-hint">基于 RAGFlow 可视化编排</div>'+
+  '</div>';
+}
+function render(){
+  var kw=(document.getElementById('searchInput').value||'').trim().toLowerCase();
+  var st=document.getElementById('statusSelect').value;
+  var list=agents.filter(function(a){
+    if(kw && a.name.toLowerCase().indexOf(kw)<0)return false;
+    if(st && a.status!==st)return false;
+    return true;
+  });
+  var html=list.map(renderAgent).join('');
+  if(!st && !kw){html+=renderNew();}
+  document.getElementById('agentGrid').innerHTML=html||'<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-4);">暂无匹配智能体</div>';
+}
+function filterAgents(){render();}
+render();
+</script>
+</body>
+</html>

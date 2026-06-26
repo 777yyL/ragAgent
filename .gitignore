@@ -1,0 +1,17 @@
+# 子项目 git 目录
+backend/.git/
+frontend/.git/
+
+# 构建产物
+backend/target/
+frontend/node_modules/
+frontend/dist/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+Thumbs.db
+.DS_Store

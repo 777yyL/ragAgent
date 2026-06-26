@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(python3:*)",
+      "mcp__web-reader__webReader",
+      "WebSearch",
+      "Bash(grep:*)",
+      "mcp__zread__get_repo_structure",
+      "Bash(java:*)",
+      "Bash(mvn:*)",
+      "Bash(docker:*)",
+      "Bash(mkdir:*)",
+      "Bash(cat:*)",
+      "Bash(node:*)",
+      "Bash(pnpm install:*)",
+      "Bash(npx vue-tsc:*)",
+      "Bash(curl:*)",
+      "Bash(python -c \":*)",
+      "Bash(npx:*)"
+    ]
+  }
+}

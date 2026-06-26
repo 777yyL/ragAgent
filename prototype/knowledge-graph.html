@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识图谱 - 发电知识中心</title>
+<style>
+/* =========================================================================
+   发电知识中心 · 企业级设计规范 v2.0
+   严格复用 index.html :root 变量与组件
+   ========================================================================= */
+:root {
+  --primary: #C7000B;
+  --primary-hover: #D9001B;
+  --primary-active: #A6000A;
+  --primary-bg: #FFF1F0;
+  --primary-bg-hover: #FFD6CC;
+  --primary-border: #FFA39E;
+
+  --success: #00B42A;  --success-bg: #E8FFEA;  --success-border: #C4E8C9;
+  --warning: #FF7D00;  --warning-bg: #FFF7E8;  --warning-border: #FFDDBA;
+  --danger:  #F53F3F;  --danger-bg:  #FFECE8;  --danger-border:  #FFCCC7;
+
+  --text-1: #1D2129;
+  --text-2: #4E5969;
+  --text-3: #86909C;
+  --text-4: #C9CDD4;
+  --border: #E5E6EB;
+  --border-2: #F2F3F5;
+  --fill-1: #F7F8FA;
+  --fill-2: #F2F3F5;
+  --white: #FFFFFF;
+
+  --sider-bg: #1D2129;
+  --sider-text: rgba(255,255,255,0.55);
+  --sider-text-hover: rgba(255,255,255,0.85);
+  --sider-group: rgba(255,255,255,0.35);
+  --sider-hover: rgba(255,255,255,0.05);
+  --sider-active: #C7000B;
+
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-2: 0 2px 8px rgba(0,0,0,0.06);
+
+  --fs-12: 12px; --fs-13: 13px; --fs-14: 14px; --fs-16: 16px;
+  --fs-18: 18px; --fs-20: 20px; --fs-24: 24px; --fs-30: 30px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--fs-14); color: var(--text-1); background: var(--fill-1);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--primary); text-decoration: none; }
+a:hover { color: var(--primary-hover); }
+
+/* ============ 顶栏 ============ */
+.header {
+  height: 48px; background: var(--sider-bg); color: #fff;
+  display: flex; align-items: center; padding: 0 var(--space-6);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+}
+.header-logo { width: 220px; display: flex; align-items: center; gap: var(--space-2); }
+.logo-mark {
+  width: 24px; height: 24px; background: var(--primary); border-radius: var(--radius-sm);
+  position: relative; flex-shrink: 0;
+}
+.logo-mark::before {
+  content: ''; position: absolute; left: 11px; top: 4px;
+  width: 2px; height: 16px; background: #fff;
+}
+.logo-mark::after {
+  content: ''; position: absolute; left: 4px; top: 7px;
+  width: 9px; height: 9px; border: 2px solid #fff; border-radius: 50%;
+  border-top-color: transparent; border-right-color: transparent;
+}
+.logo-text { font-size: var(--fs-16); font-weight: 600; letter-spacing: 0.5px; }
+.header-breadcrumb { flex: 1; font-size: var(--fs-13); color: rgba(255,255,255,0.45); }
+.header-breadcrumb .cur { color: #fff; }
+.header-actions { display: flex; align-items: center; gap: var(--space-4); }
+.header-icon-btn {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); cursor: pointer; color: rgba(255,255,255,0.65);
+  position: relative;
+}
+.header-icon-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.header-icon-btn .dot {
+  position: absolute; top: 6px; right: 6px; width: 6px; height: 6px;
+  background: var(--danger); border-radius: 50%; border: 1.5px solid var(--sider-bg);
+}
+.header-user {
+  display: flex; align-items: center; gap: var(--space-2); cursor: pointer;
+  padding: 0 var(--space-2); height: 32px; border-radius: var(--radius-sm);
+}
+.header-user:hover { background: rgba(255,255,255,0.08); }
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--primary);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-12); font-weight: 500; flex-shrink: 0;
+}
+.user-name { font-size: var(--fs-13); color: #fff; }
+
+/* ============ 顶部导航 ============ */
+.nav {
+  flex: 1; display: flex; align-items: center; height: 100%;
+  margin-left: var(--space-4); gap: 0;
+}
+.nav-item {
+  position: relative; height: 100%; display: flex; align-items: center;
+  padding: 0 var(--space-3); font-size: var(--fs-13);
+  color: rgba(255,255,255,0.65); cursor: pointer;
+  transition: color 0.15s; white-space: nowrap;
+}
+.nav-item:hover { color: #fff; }
+.nav-item.active { color: #fff; }
+.nav-item.active::after {
+  content: ''; position: absolute; left: var(--space-3); right: var(--space-3);
+  bottom: 0; height: 2px; background: var(--primary-hover);
+}
+.nav-arrow {
+  margin-left: 4px; font-size: 10px; opacity: 0.6;
+  display: inline-block; transition: transform 0.15s;
+}
+.nav-item:hover .nav-arrow { transform: rotate(180deg); opacity: 1; }
+.nav-badge {
+  margin-left: 6px; background: var(--danger); color: #fff;
+  font-size: 11px; padding: 0 6px; height: 16px; border-radius: 8px;
+  display: inline-flex; align-items: center; min-width: 16px; justify-content: center;
+}
+
+/* 下拉菜单 */
+.nav-dropdown {
+  position: absolute; top: 100%; left: 0; min-width: 184px;
+  background: var(--white); border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); padding: var(--space-1) 0;
+  display: none; z-index: 200;
+}
+.nav-item:hover .nav-dropdown { display: block; }
+.nav-dropdown::before {
+  content: ''; position: fixed; top: 48px; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+}
+.nav-sub-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-2) var(--space-4); font-size: var(--fs-13);
+  color: var(--text-2); cursor: pointer; transition: all 0.15s;
+}
+.nav-sub-item:hover { background: var(--fill-1); color: var(--primary); }
+.nav-sub-item.active {
+  color: var(--primary); font-weight: 500; background: var(--primary-bg);
+  border-left: 3px solid var(--primary); padding-left: calc(var(--space-4) - 3px);
+}
+.nav-sub-item.disabled { color: var(--text-4); cursor: not-allowed; }
+.nav-sub-item.disabled:hover { background: none; color: var(--text-4); }
+.nav-sub-tag {
+  font-size: 11px; padding: 0 6px; height: 16px; border-radius: var(--radius-sm);
+  background: var(--fill-2); color: var(--text-4);
+  display: inline-flex; align-items: center;
+}
+.nav-sub-badge {
+  background: var(--danger); color: #fff; font-size: 11px;
+  padding: 0 6px; height: 16px; border-radius: 8px;
+  display: inline-flex; align-items: center; min-width: 16px; justify-content: center;
+}
+
+/* ============ 布局 ============ */
+.layout { display: flex; min-height: 100vh; }
+
+/* ============ 主内容 ============ */
+.main {
+  flex: 1; margin-top: 48px; padding: var(--space-6);
+}
+.page-head { margin-bottom: var(--space-4); }
+.page-title { font-size: var(--fs-20); font-weight: 600; color: var(--text-1); margin-bottom: var(--space-1); }
+.page-sub { font-size: var(--fs-13); color: var(--text-3); }
+
+/* ============ 卡片 ============ */
+.card {
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1); padding: var(--space-5);
+}
+.card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: var(--space-4);
+}
+.card-title { font-size: var(--fs-16); font-weight: 600; }
+.card-link { font-size: var(--fs-13); }
+
+/* ============ 按钮 ============ */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  padding: 0 var(--space-4); height: 32px; border-radius: var(--radius-sm);
+  font-size: var(--fs-14); cursor: pointer; border: 1px solid transparent;
+  font-weight: 400; transition: all 0.15s; white-space: nowrap;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-default { background: var(--white); border-color: var(--border); color: var(--text-2); }
+.btn-default:hover { border-color: var(--primary); color: var(--primary); }
+.btn-text { background: none; color: var(--primary); padding: 0 var(--space-2); height: auto; }
+.btn-text:hover { color: var(--primary-hover); }
+
+/* ============ 标签 ============ */
+.tag {
+  display: inline-flex; align-items: center; padding: 0 var(--space-2);
+  height: 22px; border-radius: var(--radius-sm); font-size: var(--fs-12);
+  line-height: 1; border: 1px solid transparent;
+}
+.tag-primary { background: var(--primary-bg); color: var(--primary-active); border-color: var(--primary-border); }
+.tag-success { background: var(--success-bg); color: var(--success); border-color: var(--success-border); }
+.tag-warning { background: var(--warning-bg); color: var(--warning); border-color: var(--warning-border); }
+.tag-danger  { background: var(--danger-bg);  color: var(--danger);  border-color: var(--danger-border); }
+.tag-default { background: var(--fill-2); color: var(--text-3); }
+
+/* ============ 提示条 ============ */
+.alert {
+  border-radius: var(--radius-md); padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4); display: flex; align-items: center; gap: var(--space-2);
+  font-size: var(--fs-13);
+}
+.alert-warning { background: var(--warning-bg); border: 1px solid var(--warning-border); color: var(--warning); }
+.alert-primary { background: var(--primary-bg); border: 1px solid var(--primary-border); color: var(--primary-active); }
+
+/* ============ 三栏布局 ============ */
+.graph-layout { display: flex; gap: var(--space-4); align-items: flex-start; }
+
+/* ============ 左侧面板 ============ */
+.graph-left { width: 260px; flex-shrink: 0; position: sticky; top: 56px; }
+.graph-left .card { padding: var(--space-4); }
+.filter-group { margin-bottom: var(--space-5); }
+.filter-group:last-child { margin-bottom: 0; }
+.filter-group-title {
+  font-size: var(--fs-13); font-weight: 600; color: var(--text-1);
+  margin-bottom: var(--space-3);
+}
+
+/* 复选项 */
+.check-item {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-1) 0; cursor: pointer; font-size: var(--fs-13); color: var(--text-2);
+}
+.check-item:hover { color: var(--primary); }
+.check-item input[type="checkbox"] {
+  appearance: none; width: 14px; height: 14px; border: 1px solid var(--border);
+  border-radius: 2px; cursor: pointer; position: relative; flex-shrink: 0; background: var(--white);
+}
+.check-item input[type="checkbox"]:checked {
+  background: var(--primary); border-color: var(--primary);
+}
+.check-item input[type="checkbox"]:checked::after {
+  content: ''; position: absolute; left: 4px; top: 1px;
+  width: 4px; height: 8px; border: solid #fff; border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+.check-item .count { margin-left: auto; color: var(--text-3); font-size: var(--fs-12); }
+.check-item.checked { color: var(--primary-active); font-weight: 500; }
+
+/* 搜索框 */
+.graph-search {
+  width: 100%; height: 32px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0 var(--space-3);
+  font-size: var(--fs-13); color: var(--text-1); background: var(--white); outline: none;
+  margin-bottom: var(--space-3);
+}
+.graph-search:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-bg); }
+
+/* 实体列表 */
+.entity-list {
+  max-height: 280px; overflow-y: auto;
+  border-top: 1px solid var(--border-2); padding-top: var(--space-2);
+}
+.entity-list::-webkit-scrollbar { width: 4px; }
+.entity-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.entity-row {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2); border-radius: var(--radius-sm); cursor: pointer;
+  font-size: var(--fs-13); color: var(--text-2);
+}
+.entity-row:hover { background: var(--fill-1); color: var(--primary); }
+.entity-row.active { background: var(--primary-bg); color: var(--primary-active); font-weight: 500; }
+.entity-row .entity-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.entity-row .entity-type {
+  margin-left: auto; font-size: var(--fs-12); color: var(--text-3);
+}
+
+/* ============ 中央画布 ============ */
+.graph-center {
+  flex: 1; min-width: 0;
+}
+.graph-canvas {
+  position: relative; width: 100%; height: 560px;
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1); overflow: hidden;
+  background-image:
+    radial-gradient(circle, var(--border-2) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.graph-canvas svg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+}
+
+/* 节点 */
+.node {
+  position: absolute; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; transition: all 0.2s; z-index: 2;
+}
+.node-circle {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-12); font-weight: 600; color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12); border: 2px solid var(--white);
+  transition: all 0.2s;
+}
+.node-label {
+  margin-top: var(--space-1); font-size: var(--fs-12); color: var(--text-1);
+  background: var(--white); padding: 1px 6px; border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-1); white-space: nowrap;
+}
+.node:hover .node-circle { transform: scale(1.15); }
+
+/* 节点颜色（克制配色：仅 primary 深浅 + 中性色） */
+.node-equipment .node-circle { background: #A6000A; }  /* 设备 - primary 深 */
+.node-parameter .node-circle { background: #D9001B; }  /* 参数 - primary 浅 */
+.node-fault .node-circle { background: #F53F3F; }      /* 故障 - danger */
+.node-measure .node-circle { background: #00B42A; }    /* 措施 - success */
+.node-standard .node-circle { background: #4E5969; }   /* 标准 - 中性深 */
+.node-person .node-circle { background: #86909C; }     /* 人员 - 中性中 */
+.node-department .node-circle { background: #C9CDD4; color: var(--text-1); }  /* 部门 - 中性浅 */
+
+/* 选中态 */
+.node.dimmed { opacity: 0.25; }
+.node.selected .node-circle {
+  box-shadow: 0 0 0 4px var(--primary-bg), 0 2px 12px rgba(199,0,11,0.4);
+  transform: scale(1.2);
+}
+.node.selected .node-label { color: var(--primary-active); font-weight: 600; }
+
+/* 画布顶部信息条 */
+.canvas-info {
+  position: absolute; top: var(--space-4); left: var(--space-4);
+  background: rgba(255,255,255,0.95); border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4); box-shadow: var(--shadow-1);
+  font-size: var(--fs-13); color: var(--text-2); z-index: 3;
+  display: flex; align-items: center; gap: var(--space-3);
+}
+.canvas-info strong { color: var(--primary-active); }
+
+/* 画布操作按钮 */
+.canvas-toolbar {
+  position: absolute; top: var(--space-4); right: var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-1); z-index: 3;
+}
+.toolbar-btn {
+  width: 32px; height: 32px; background: rgba(255,255,255,0.95);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-2); box-shadow: var(--shadow-1);
+}
+.toolbar-btn:hover { color: var(--primary); border-color: var(--primary); }
+
+/* ============ 右侧详情面板 ============ */
+.graph-right { width: 300px; flex-shrink: 0; position: sticky; top: 56px; }
+.graph-right .card { padding: var(--space-5); }
+.detail-head {
+  padding-bottom: var(--space-4); margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-2);
+}
+.detail-type { font-size: var(--fs-12); color: var(--primary-active); margin-bottom: var(--space-1); }
+.detail-name { font-size: var(--fs-18); font-weight: 600; color: var(--text-1); }
+.detail-section { margin-bottom: var(--space-5); }
+.detail-section:last-child { margin-bottom: 0; }
+.detail-section-title {
+  font-size: var(--fs-13); font-weight: 600; color: var(--text-1);
+  margin-bottom: var(--space-3);
+}
+.detail-prop {
+  display: flex; justify-content: space-between;
+  padding: var(--space-2) 0; font-size: var(--fs-13);
+  border-bottom: 1px solid var(--border-2);
+}
+.detail-prop:last-child { border-bottom: none; }
+.detail-prop .key { color: var(--text-3); }
+.detail-prop .val { color: var(--text-1); font-weight: 500; }
+
+.relation-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.relation-item {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2); background: var(--fill-1); border-radius: var(--radius-sm);
+  font-size: var(--fs-13);
+}
+.relation-item .rel-name { color: var(--text-1); cursor: pointer; }
+.relation-item .rel-name:hover { color: var(--primary); }
+.relation-item .rel-type {
+  margin-left: auto; font-size: var(--fs-12); color: var(--text-3);
+}
+
+.chunk-box {
+  background: var(--fill-1); border-radius: var(--radius-md);
+  padding: var(--space-3); font-size: var(--fs-13); color: var(--text-2);
+  line-height: 1.6; margin-bottom: var(--space-2);
+}
+.chunk-source {
+  font-size: var(--fs-12); color: var(--text-3); margin-top: var(--space-1);
+}
+
+/* ============ 图例 ============ */
+.legend-bar {
+  margin-top: var(--space-4); background: var(--white);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-1);
+  padding: var(--space-4) var(--space-5);
+  display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap;
+}
+.legend-title { font-size: var(--fs-13); font-weight: 600; color: var(--text-1); }
+.legend-item {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: var(--fs-13); color: var(--text-2);
+}
+.legend-dot {
+  width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--white);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 顶栏 ============ -->
+<header class="header">
+  <div class="header-logo">
+    <div class="logo-mark"></div>
+    <span class="logo-text">发电知识中心</span>
+  </div>
+  <nav class="nav">
+    <a class="nav-item" href="index.html">知识门户首页</a>
+    <a class="nav-item" href="workbench.html">我的工作台<span class="nav-badge">12</span></a>
+    <a class="nav-item" href="dataset.html">知识库管理</a>
+    <div class="nav-item">知识采集与抽取<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="upload-wizard.html">手动上传</a>
+        <a class="nav-sub-item" href="documents.html">文档管理</a>
+        <a class="nav-sub-item" href="data-source.html">数据源管理</a>
+      </div>
+    </div>
+    <div class="nav-item">知识处理与加工<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="detail.html">解析与切片</a>
+        <div class="nav-sub-item disabled">清洗·融合·补全<span class="nav-sub-tag">二期</span></div>
+      </div>
+    </div>
+    <div class="nav-item">知识审核<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="audit-workbench.html">人工审核<span class="nav-sub-badge">12</span></a>
+        <a class="nav-sub-item" href="ai-audit-report.html">AI 审核<span class="nav-sub-badge">38</span></a>
+      </div>
+    </div>
+    <div class="nav-item active">知识入库<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item active" href="knowledge-graph.html">知识图谱</a>
+        <a class="nav-sub-item" href="annotation.html">知识标注</a>
+      </div>
+    </div>
+    <div class="nav-item">知识检索<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="search.html">知识检索</a>
+        <a class="nav-sub-item" href="retrieval-test.html">检索测试</a>
+      </div>
+    </div>
+    <div class="nav-item">智能应用<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="agents.html">智能体管理</a>
+        <a class="nav-sub-item" href="chat.html">智能对话</a>
+      </div>
+    </div>
+    <div class="nav-item">知识统计与分析<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="statistics.html">统计仪表盘</a>
+      </div>
+    </div>
+    <div class="nav-item">运营管理<span class="nav-arrow">▾</span>
+      <div class="nav-dropdown">
+        <a class="nav-sub-item" href="permission.html">权限管理</a>
+        <a class="nav-sub-item" href="version.html">版本管理</a>
+        <a class="nav-sub-item" href="settings.html">系统设置</a>
+      </div>
+    </div>
+  </nav>
+  <div class="header-actions">
+    <div class="header-icon-btn" title="通知">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a4 4 0 014 4v3l1.5 2.5h-11L4 8.5v-3a4 4 0 014-4zM6.5 12.5a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span class="dot"></span>
+    </div>
+    <div class="header-icon-btn" title="帮助">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.3"/><path d="M6.3 6.3a1.7 1.7 0 013.3.6c0 1.2-1.6 1.4-1.6 2.5M8 11.3v.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </div>
+    <div class="header-user">
+      <div class="avatar">张</div>
+      <div class="user-name">张明远</div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- ============ 主内容 ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div class="page-title">知识图谱</div>
+      <div class="page-sub">实体关系可视化探索，支持溯源检索与社区发现</div>
+    </div>
+
+    <!-- 警告条 -->
+    <div class="alert alert-warning">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><path d="M8 1.5L1.5 14h13L8 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 6v4M8 12v.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>当前使用 <strong>RAGFlow 内置 LightRAG</strong> 引擎构建图谱，<strong>Neo4j</strong> 集成方案处于技术评估阶段（预计 Q3 完成）。当前图谱数据为本地分析结果，迁移至 Neo4j 后查询性能将提升约 5 倍。</span>
+    </div>
+
+    <div class="graph-layout">
+      <!-- ============ 左侧面板 ============ -->
+      <div class="graph-left">
+        <div class="card">
+          <!-- 实体类型 -->
+          <div class="filter-group">
+            <div class="filter-group-title">实体类型</div>
+            <label class="check-item checked">
+              <input type="checkbox" checked>
+              <span>设备</span>
+              <span class="count">1,284</span>
+            </label>
+            <label class="check-item checked">
+              <input type="checkbox" checked>
+              <span>参数</span>
+              <span class="count">2,156</span>
+            </label>
+            <label class="check-item checked">
+              <input type="checkbox" checked>
+              <span>故障</span>
+              <span class="count">945</span>
+            </label>
+            <label class="check-item checked">
+              <input type="checkbox" checked>
+              <span>措施</span>
+              <span class="count">1,632</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox">
+              <span>人员</span>
+              <span class="count">328</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox">
+              <span>部门</span>
+              <span class="count">56</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox">
+              <span>标准</span>
+              <span class="count">412</span>
+            </label>
+          </div>
+
+          <!-- 关系类型 -->
+          <div class="filter-group">
+            <div class="filter-group-title">关系类型</div>
+            <label class="check-item checked">
+              <input type="checkbox" checked>
+              <span>包含</span>
+              <span class="count">3,824</span>
+            </label>
+            <label class="check-item checked">
+              <input type="checkbox" checked>
+              <span>引发</span>
+              <span class="count">1,205</span>
+            </label>
+            <label class="check-item checked">
+              <input type="checkbox" checked>
+              <span>处理</span>
+              <span class="count">1,632</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox">
+              <span>监管</span>
+              <span class="count">412</span>
+            </label>
+            <label class="check-item">
+              <input type="checkbox">
+              <span>引用</span>
+              <span class="count">684</span>
+            </label>
+          </div>
+
+          <!-- 搜索 -->
+          <div class="filter-group">
+            <div class="filter-group-title">搜索实体</div>
+            <input class="graph-search" type="text" placeholder="输入实体名称..." value="过热器" />
+            <div class="entity-list">
+              <div class="entity-row active">
+                <span class="entity-dot" style="background:#A6000A;"></span>
+                <span>过热器</span>
+                <span class="entity-type">设备</span>
+              </div>
+              <div class="entity-row">
+                <span class="entity-dot" style="background:#D9001B;"></span>
+                <span>管壁温度</span>
+                <span class="entity-type">参数</span>
+              </div>
+              <div class="entity-row">
+                <span class="entity-dot" style="background:#F53F3F;"></span>
+                <span>超温蠕变</span>
+                <span class="entity-type">故障</span>
+              </div>
+              <div class="entity-row">
+                <span class="entity-dot" style="background:#00B42A;"></span>
+                <span>投减温水</span>
+                <span class="entity-type">措施</span>
+              </div>
+              <div class="entity-row">
+                <span class="entity-dot" style="background:#4E5969;"></span>
+                <span>DL/T 438-2022</span>
+                <span class="entity-type">标准</span>
+              </div>
+              <div class="entity-row">
+                <span class="entity-dot" style="background:#A6000A;"></span>
+                <span>减温水调节阀</span>
+                <span class="entity-type">设备</span>
+              </div>
+              <div class="entity-row">
+                <span class="entity-dot" style="background:#D9001B;"></span>
+                <span>减温水流量</span>
+                <span class="entity-type">参数</span>
+              </div>
+              <div class="entity-row">
+                <span class="entity-dot" style="background:#86909C;"></span>
+                <span>张明远</span>
+                <span class="entity-type">人员</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 中央画布 ============ -->
+      <div class="graph-center">
+        <div class="graph-canvas">
+          <!-- 信息条 -->
+          <div class="canvas-info">
+            <span>实体 <strong>8</strong></span>
+            <span style="color:var(--text-4);">|</span>
+            <span>关系 <strong>12</strong></span>
+            <span style="color:var(--text-4);">|</span>
+            <span>选中：<strong>过热器</strong></span>
+          </div>
+
+          <!-- 工具栏 -->
+          <div class="canvas-toolbar">
+            <div class="toolbar-btn" title="放大">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M11 11l3 3M5 7h4M7 5v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="toolbar-btn" title="缩小">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M11 11l3 3M5 7h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <div class="toolbar-btn" title="重置">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1011.5-2.5M13.5 2v4h-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="toolbar-btn" title="全屏">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 5V2h3M14 5V2h-3M2 11v3h3M14 11v3h-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+
+          <!-- SVG 连线 -->
+          <svg>
+            <!-- 中心到周围节点 -->
+            <line x1="50%" y1="50%" x2="22%" y2="22%" stroke="#C9CDD4" stroke-width="1.5"/>
+            <line x1="50%" y1="50%" x2="78%" y2="22%" stroke="#C9CDD4" stroke-width="1.5"/>
+            <line x1="50%" y1="50%" x2="85%" y2="50%" stroke="#C9CDD4" stroke-width="1.5"/>
+            <line x1="50%" y1="50%" x2="78%" y2="78%" stroke="#C9CDD4" stroke-width="1.5"/>
+            <line x1="50%" y1="50%" x2="50%" y2="88%" stroke="#C9CDD4" stroke-width="1.5"/>
+            <line x1="50%" y1="50%" x2="22%" y2="78%" stroke="#C9CDD4" stroke-width="1.5"/>
+            <line x1="50%" y1="50%" x2="12%" y2="50%" stroke="#C9CDD4" stroke-width="1.5"/>
+
+            <!-- 周围节点之间的关联 -->
+            <line x1="22%" y1="22%" x2="78%" y2="22%" stroke="#E5E6EB" stroke-width="1" stroke-dasharray="4 4"/>
+            <line x1="78%" y1="78%" x2="50%" y2="88%" stroke="#E5E6EB" stroke-width="1" stroke-dasharray="4 4"/>
+            <line x1="22%" y1="78%" x2="12%" y2="50%" stroke="#E5E6EB" stroke-width="1" stroke-dasharray="4 4"/>
+
+            <!-- 选中高亮线 -->
+            <line x1="50%" y1="50%" x2="22%" y2="22%" stroke="#C7000B" stroke-width="2" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="78%" y2="22%" stroke="#C7000B" stroke-width="2" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="85%" y2="50%" stroke="#C7000B" stroke-width="2" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="78%" y2="78%" stroke="#C7000B" stroke-width="2" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="50%" y2="88%" stroke="#C7000B" stroke-width="2" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="22%" y2="78%" stroke="#C7000B" stroke-width="2" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="12%" y2="50%" stroke="#C7000B" stroke-width="2" opacity="0.6"/>
+          </svg>
+
+          <!-- 节点 -->
+          <!-- 中心节点 -->
+          <div class="node node-equipment selected" style="left:50%; top:50%;">
+            <div class="node-circle">过热器</div>
+            <div class="node-label">过热器</div>
+          </div>
+
+          <!-- 周围节点 -->
+          <div class="node node-parameter" style="left:22%; top:22%;">
+            <div class="node-circle">参数</div>
+            <div class="node-label">管壁温度</div>
+          </div>
+
+          <div class="node node-parameter" style="left:78%; top:22%;">
+            <div class="node-circle">参数</div>
+            <div class="node-label">减温水流量</div>
+          </div>
+
+          <div class="node node-fault" style="left:85%; top:50%;">
+            <div class="node-circle">故障</div>
+            <div class="node-label">超温蠕变</div>
+          </div>
+
+          <div class="node node-measure" style="left:78%; top:78%;">
+            <div class="node-circle">措施</div>
+            <div class="node-label">投减温水</div>
+          </div>
+
+          <div class="node node-measure" style="left:50%; top:88%;">
+            <div class="node-circle">措施</div>
+            <div class="node-label">降负荷运行</div>
+          </div>
+
+          <div class="node node-standard" style="left:22%; top:78%;">
+            <div class="node-circle">标准</div>
+            <div class="node-label">DL/T 438</div>
+          </div>
+
+          <div class="node node-equipment" style="left:12%; top:50%;">
+            <div class="node-circle">设备</div>
+            <div class="node-label">减温水阀</div>
+          </div>
+        </div>
+
+        <!-- 图例 -->
+        <div class="legend-bar">
+          <div class="legend-title">图例</div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#A6000A;"></span>
+            <span>设备</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#D9001B;"></span>
+            <span>参数</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#F53F3F;"></span>
+            <span>故障</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#00B42A;"></span>
+            <span>措施</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#4E5969;"></span>
+            <span>标准</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#86909C;"></span>
+            <span>人员</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#C9CDD4;"></span>
+            <span>部门</span>
+          </div>
+          <div class="legend-item" style="margin-left:auto;">
+            <svg width="20" height="8"><line x1="0" y1="4" x2="20" y2="4" stroke="#C7000B" stroke-width="2"/></svg>
+            <span>高亮关联</span>
+          </div>
+          <div class="legend-item">
+            <svg width="20" height="8"><line x1="0" y1="4" x2="20" y2="4" stroke="#E5E6EB" stroke-width="1" stroke-dasharray="4 4"/></svg>
+            <span>间接关联</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 右侧详情面板 ============ -->
+      <div class="graph-right">
+        <div class="card">
+          <div class="detail-head">
+            <div class="detail-type">设备 · 中心实体</div>
+            <div class="detail-name">过热器</div>
+          </div>
+
+          <!-- 属性 -->
+          <div class="detail-section">
+            <div class="detail-section-title">属性</div>
+            <div class="detail-prop">
+              <span class="key">实体 ID</span>
+              <span class="val">EQ-2024-0312</span>
+            </div>
+            <div class="detail-prop">
+              <span class="key">设备类型</span>
+              <span class="val">锅炉受热面</span>
+            </div>
+            <div class="detail-prop">
+              <span class="key">材质</span>
+              <span class="val">T91 / TP347H</span>
+            </div>
+            <div class="detail-prop">
+              <span class="key">设计壁温</span>
+              <span class="val">595℃</span>
+            </div>
+            <div class="detail-prop">
+              <span class="key">报警阈值</span>
+              <span class="val" style="color:var(--danger);">605℃</span>
+            </div>
+            <div class="detail-prop">
+              <span class="key">关联文档</span>
+              <span class="val">28 篇</span>
+            </div>
+          </div>
+
+          <!-- 关联实体 -->
+          <div class="detail-section">
+            <div class="detail-section-title">关联实体</div>
+            <div class="relation-list">
+              <div class="relation-item">
+                <span class="entity-dot" style="background:#D9001B; width:8px; height:8px; border-radius:50%;"></span>
+                <span class="rel-name">管壁温度</span>
+                <span class="rel-type">参数 · 包含</span>
+              </div>
+              <div class="relation-item">
+                <span class="entity-dot" style="background:#F53F3F; width:8px; height:8px; border-radius:50%;"></span>
+                <span class="rel-name">超温蠕变</span>
+                <span class="rel-type">故障 · 引发</span>
+              </div>
+              <div class="relation-item">
+                <span class="entity-dot" style="background:#00B42A; width:8px; height:8px; border-radius:50%;"></span>
+                <span class="rel-name">投减温水</span>
+                <span class="rel-type">措施 · 处理</span>
+              </div>
+              <div class="relation-item">
+                <span class="entity-dot" style="background:#00B42A; width:8px; height:8px; border-radius:50%;"></span>
+                <span class="rel-name">降负荷运行</span>
+                <span class="rel-type">措施 · 处理</span>
+              </div>
+              <div class="relation-item">
+                <span class="entity-dot" style="background:#A6000A; width:8px; height:8px; border-radius:50%;"></span>
+                <span class="rel-name">减温水调节阀</span>
+                <span class="rel-type">设备 · 关联</span>
+              </div>
+              <div class="relation-item">
+                <span class="entity-dot" style="background:#4E5969; width:8px; height:8px; border-radius:50%;"></span>
+                <span class="rel-name">DL/T 438-2022</span>
+                <span class="rel-type">标准 · 引用</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 来源 chunk -->
+          <div class="detail-section">
+            <div class="detail-section-title">来源 Chunk</div>
+            <div class="chunk-box">
+              当过热器管壁温度超限达到报警值时，值班员应立即检查给煤量与风煤比，必要时投入一级减温水...
+              <div class="chunk-source">600MW 机组运行规程.pdf · 第 142 页</div>
+            </div>
+            <div class="chunk-box">
+              T91 钢在过热器管壁温度超限工况下，Larson-Miller 参数预测蠕变寿命...
+              <div class="chunk-source">DL/T 1317-2024 · 第 8 页</div>
+            </div>
+          </div>
+
+          <!-- 社区报告摘要 -->
+          <div class="detail-section">
+            <div class="detail-section-title">社区报告摘要</div>
+            <div class="chunk-box" style="background:var(--primary-bg); border-left:3px solid var(--primary);">
+              过热器是锅炉关键受热面设备，其安全运行与管壁温度、减温水系统、金属材料状态密切相关。超温蠕变是主要故障模式，处置措施包括投减温水、降负荷与金属监督检测。关联标准为 DL/T 438-2022 与 DL/T 1317-2024。
+              <div class="chunk-source" style="color:var(--primary-active);">社区 #CL-0184 · 置信度 0.87</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
