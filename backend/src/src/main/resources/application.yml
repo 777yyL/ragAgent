@@ -1,0 +1,39 @@
+server:
+  port: 8081
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/knowledge
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  redis:
+    host: ${REDIS_HOST:8.130.168.42}
+    port: ${REDIS_PORT:6379}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-handlers-package: com.company.knowledge.permission.handler
+  configuration:
+    map-underscore-to-camel-case: true
+
+ragflow:
+  base-url: ${RAGFLOW_URL:http://localhost:9380}
+  api-key: ${RAGFLOW_API_KEY:ragflow-PROymUXoUTAx7JU_-1Cwam-mGZrJLmdc_FXiD7TRP4Q}
+
+hikvision:
+  host: ${HIKVISION_HOST:222.143.69.45:1443}
+  app-key: ${HIKVISION_APP_KEY:20603572}
+  app-secret: ${HIKVISION_APP_SECRET:eN9PdnxywxhWXGZfeyvo}
+  oauth-redirect-uri: ${OAUTH_REDIRECT_URI:https://knowledge.company.com/sso/callback}
+
+logging:
+  level:
+    com.company.knowledge: INFO
+    com.company.knowledge.integration: DEBUG

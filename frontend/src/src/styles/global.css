@@ -1,0 +1,58 @@
+/* =========================================================================
+   发电知识中心 · 企业级设计系统（从 HTML 原型提取）
+   主色：海康品牌红 #C7000B
+   ========================================================================= */
+:root {
+  --primary: #C7000B;
+  --primary-hover: #D9001B;
+  --primary-active: #A6000A;
+  --primary-bg: #FFF1F0;
+  --primary-border: #FFA39E;
+
+  --success: #00B42A;
+  --warning: #FF7D00;
+  --danger: #F53F3F;
+
+  --text-1: #1D2129;
+  --text-2: #4E5969;
+  --text-3: #86909C;
+  --text-4: #C9CDD4;
+  --border: #E5E6EB;
+  --border-2: #F2F3F5;
+  --fill-1: #F7F8FA;
+  --white: #FFFFFF;
+
+  --header-bg: #1D2129;
+  --header-height: 48px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-2: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body, #app { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px; color: var(--text-1); background: var(--fill-1);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--primary); text-decoration: none; }
+
+/* 覆盖 Element Plus 主色为海康红 */
+:root {
+  --el-color-primary: #C7000B;
+  --el-color-primary-light-3: #D9001B;
+  --el-color-primary-light-5: #E60012;
+  --el-color-primary-light-7: #FFA39E;
+  --el-color-primary-light-9: #FFF1F0;
+  --el-color-primary-dark-2: #A6000A;
+}
+
+/* 通用工具类 */
+.page-container { padding: 24px; }
+.page-title { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: var(--text-3); margin-bottom: 20px; }

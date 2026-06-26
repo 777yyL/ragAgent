@@ -17,7 +17,8 @@
       "Bash(npx vue-tsc:*)",
       "Bash(curl:*)",
       "Bash(python -c \":*)",
-      "Bash(npx:*)"
+      "Bash(npx:*)",
+      "Bash(rm:*)"
     ]
   }
 }
