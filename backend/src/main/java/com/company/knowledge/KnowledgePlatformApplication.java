@@ -4,6 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 发电知识中心 · 知识管理平台后端启动类。
@@ -11,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @MapperScan("com.company.knowledge.**.mapper")
 @EnableAsync
+@EnableScheduling
 public class KnowledgePlatformApplication {
 
     public static void main(String[] args) {

@@ -33,12 +33,6 @@ hikvision:
   app-secret: ${HIKVISION_APP_SECRET:eN9PdnxywxhWXGZfeyvo}
   oauth-redirect-uri: ${OAUTH_REDIRECT_URI:https://knowledge.company.com/sso/callback}
 
-xxl:
-  job:
-    admin:
-      addresses: ${XXL_JOB_ADMIN:http://localhost:8080/xxl-job-admin}
-    accessToken: ${XXL_JOB_TOKEN:}
-    appname: knowledge-platform
 
 logging:
   level:

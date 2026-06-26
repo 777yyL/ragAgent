@@ -18,7 +18,9 @@
       "Bash(curl:*)",
       "Bash(python -c \":*)",
       "Bash(npx:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(rm -rf \"E:/claudecode_workspace/rag/rag-knowledge-platform\" \"E:/claudecode_workspace/rag/rag-knowledge-frontend\")",
+      "Read(//e/claudecode_workspace/rag/**)"
     ]
   }
 }
